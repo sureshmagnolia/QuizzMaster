@@ -11,27 +11,17 @@ bc.onmessage = (event) => {
 
     if (action === 'SCORE_UPDATE' || action === 'SHOW_LEADERBOARD' || action === 'ROUND_CHANGED') {
         renderLeaderboard(data.teams);
-        switchView('lbView');
     } else if (action === 'CLEAR_SCREEN') {
-        document.getElementById('lbView').classList.remove('active');
-        document.getElementById('qView').classList.remove('active');
+        document.getElementById('qText').innerText = "Waiting for Question...";
+        document.getElementById('mediaContainer').innerHTML = "";
+        document.getElementById('aText').style.display = 'none';
+        document.getElementById('aText').innerText = "";
     } else if (action === 'SHOW_QUESTION') {
         renderQuestion(question);
-        switchView('qView');
     } else if (action === 'SHOW_ANSWER') {
         renderAnswer(question);
     }
 };
-
-function switchView(viewId) {
-    document.getElementById('lbView').classList.remove('active');
-    document.getElementById('qView').classList.remove('active');
-    
-    const view = document.getElementById(viewId);
-    view.classList.add('active');
-    // Trigger reflow for animation
-    void view.offsetWidth;
-}
 
 function renderLeaderboard(teams) {
     const board = document.getElementById('lbView');
@@ -54,10 +44,13 @@ function renderMedia(mediaStr) {
     // Basic check for YT id (11 chars, no spaces, no http)
     if (mediaStr.length === 11 && !mediaStr.includes('http') && !mediaStr.includes(' ')) {
         return `<iframe src="https://www.youtube.com/embed/${mediaStr}?autoplay=1&controls=0" allow="autoplay; encrypted-media"></iframe>`;
-    } else if (mediaStr.startsWith('http')) {
+    } else if (mediaStr.toLowerCase().endsWith('.mp4') || mediaStr.toLowerCase().endsWith('.webm') || mediaStr.toLowerCase().endsWith('.ogg')) {
+        return `<video src="${mediaStr}" autoplay controls style="width: 100%; max-height: 55vh;"></video>`;
+    } else if (mediaStr.toLowerCase().endsWith('.mp3') || mediaStr.toLowerCase().endsWith('.wav')) {
+        return `<audio src="${mediaStr}" autoplay controls style="width: 100%;"></audio>`;
+    } else {
         return `<img src="${mediaStr}" alt="Media">`;
     }
-    return '';
 }
 
 function renderQuestion(q) {
@@ -84,6 +77,5 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = JSON.parse(dataStr);
         document.getElementById('pubTitle').innerText = data.meta.title;
         renderLeaderboard(data.teams);
-        switchView('lbView');
     }
 });

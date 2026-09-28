@@ -134,18 +134,29 @@ function saveNewQuestion() {
     const r = roundsConfig.find(x => x.id === activeRoundId);
     if (!r) return;
     
+    let qMediaFile = document.getElementById('newQMediaFile').files[0];
+    let aMediaFile = document.getElementById('newAMediaFile').files[0];
+
+    let qMedia = document.getElementById('newQMedia').value;
+    if (qMediaFile) qMedia = 'media/' + qMediaFile.name;
+    
+    let aMedia = document.getElementById('newAMedia').value;
+    if (aMediaFile) aMedia = 'media/' + aMediaFile.name;
+
     r.questions.push({
         q_text: document.getElementById('newQText').value,
-        q_media: document.getElementById('newQMedia').value,
+        q_media: qMedia,
         a_text: document.getElementById('newAText').value,
-        a_media: document.getElementById('newAMedia').value
+        a_media: aMedia
     });
     
     // Reset inputs
     document.getElementById('newQText').value = '';
     document.getElementById('newQMedia').value = '';
+    document.getElementById('newQMediaFile').value = '';
     document.getElementById('newAText').value = '';
     document.getElementById('newAMedia').value = '';
+    document.getElementById('newAMediaFile').value = '';
     
     renderQuestionsList();
 }

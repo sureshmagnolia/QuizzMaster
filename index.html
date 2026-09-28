@@ -74,8 +74,11 @@
                         <textarea id="newQText" placeholder="What is the capital of France?"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Question Media (Optional YouTube ID or Image URL)</label>
-                        <input type="text" id="newQMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or https://img.url">
+                        <label>Question Media (Local File or YouTube ID)</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="newQMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or filename">
+                            <input type="file" id="newQMediaFile" style="width: 250px;">
+                        </div>
                     </div>
                     
                     <div class="form-group" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
@@ -83,8 +86,11 @@
                         <textarea id="newAText" placeholder="Paris"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Answer Media (Optional YouTube ID or Image URL)</label>
-                        <input type="text" id="newAMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or https://img.url">
+                        <label>Answer Media (Local File or YouTube ID)</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="newAMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or filename">
+                            <input type="file" id="newAMediaFile" style="width: 250px;">
+                        </div>
                     </div>
                     <button class="btn btn-primary" style="width: 100%;" onclick="saveNewQuestion()">➕ Save Question</button>
                 </div>
