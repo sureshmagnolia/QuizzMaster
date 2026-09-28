@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizzMaster | Setup Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="brand">QuizzMaster ✨</div>
+        <div>
+            <button class="btn btn-secondary" onclick="loadSavedConfig()">📥 Load JSON config</button>
+            <button class="btn btn-primary" onclick="launchQuiz()">🚀 Launch Quiz</button>
+        </div>
+    </header>
+
+    <main class="animate-fade-in">
+        <div class="setup-grid">
+            <!-- Sidebar / Settings -->
+            <div class="glass-panel">
+                <h2 style="margin-bottom: 20px;">⚙️ Global Settings</h2>
+                
+                <div class="form-group">
+                    <label>Quiz Title</label>
+                    <input type="text" id="quizTitle" placeholder="e.g. The Grand Pub Quiz 2026">
+                </div>
+
+                <div class="form-group">
+                    <label>Number of Teams</label>
+                    <select id="teamCount" onchange="generateTeamInputs()">
+                        <option value="2">2 Teams</option>
+                        <option value="3">3 Teams</option>
+                        <option value="4" selected>4 Teams</option>
+                        <option value="5">5 Teams</option>
+                        <option value="6">6 Teams</option>
+                        <option value="8">8 Teams</option>
+                        <option value="10">10 Teams</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Teams Configuration -->
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>👥 Team Roster</h2>
+                </div>
+                
+                <div id="teamsContainer" class="teams-list">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Rounds Configuration -->
+        <div class="glass-panel" style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>🎪 Round Builder</h2>
+                <button class="btn btn-secondary" onclick="addRound()">➕ Add Round</button>
+            </div>
+            
+            <div id="roundsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script src="js/setup.js"></script>
+</body>
+</html>
