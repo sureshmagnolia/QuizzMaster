@@ -7,52 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .qm-layout {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 20px;
-            height: calc(100vh - 100px);
-        }
-        .score-board {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        .qm-layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; height: calc(100vh - 100px); }
+        .score-board { display: flex; flex-direction: column; gap: 10px; }
         .team-score-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.3);
-            padding: 12px 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--t-color);
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.3); padding: 12px 15px; border-radius: 8px; border-left: 4px solid var(--t-color);
         }
         .team-score-row h3 { font-size: 1.1rem; }
         .team-score-row .score { font-size: 1.5rem; font-weight: 800; color: #fff; }
         
-        .action-panel {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .action-panel { background: rgba(15, 23, 42, 0.4); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 15px; }
         
-        .round-badge {
-            background: rgba(99, 102, 241, 0.2);
-            color: #818cf8;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
+        .round-badge { background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        
+        .q-display { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 20px; min-height: 150px; }
+        .q-text { font-size: 1.2rem; margin-bottom: 10px; color: #fff; }
+        .a-text { font-size: 1.1rem; color: var(--accent); margin-top: 10px; display: none; }
+        .media-badge { display: inline-block; padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -66,52 +38,53 @@
 
     <main>
         <div class="qm-layout">
-            <!-- Left Panel: Live Leaderboard -->
             <div class="glass-panel" style="overflow-y: auto;">
                 <h2 style="margin-bottom: 20px;">🏆 Live Scores</h2>
-                <div id="scoreBoard" class="score-board">
-                    <!-- Injected by JS -->
-                </div>
-                
+                <div id="scoreBoard" class="score-board"></div>
                 <hr style="border: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-                <button class="btn btn-secondary" style="width: 100%;" onclick="broadcastLeaderboard()">📢 Reveal Leaderboard</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;" onclick="broadcastLeaderboard()">📢 Reveal Leaderboard</button>
+                <button class="btn btn-secondary" style="width: 100%; border-color: var(--primary); color: var(--primary);" onclick="clearScreen()">🧹 Clear Screen (Blank)</button>
             </div>
 
-            <!-- Right Panel: Quiz Controls & Round Actions -->
             <div class="glass-panel" style="display: flex; flex-direction: column;">
-                
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
                         <div class="round-badge" id="currentRoundType">Infinite Bounce</div>
                         <h2 id="currentRoundName">Round 1</h2>
                     </div>
-                    <select id="roundSelector" onchange="switchRound(this.value)" style="width: 250px;">
-                        <!-- Injected by JS -->
-                    </select>
+                    <select id="roundSelector" onchange="switchRound(this.value)" style="width: 250px;"></select>
                 </div>
 
                 <div class="action-panel" style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <h3>Active Question Controls</h3>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">
-                            Direct: <span id="rPtsD" style="color:#10b981; font-weight:bold;">+10</span> | 
-                            Pass: <span id="rPtsP" style="color:#f59e0b; font-weight:bold;">+5</span> | 
-                            Neg: <span id="rPtsN" style="color:#ef4444; font-weight:bold;">0</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <h3 id="qProgress">Question 0/0</h3>
+                            <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;">
+                                Direct: <span id="rPtsD" style="color:#10b981; font-weight:bold;">+10</span> | 
+                                Pass: <span id="rPtsP" style="color:#f59e0b; font-weight:bold;">+5</span> | 
+                                Neg: <span id="rPtsN" style="color:#ef4444; font-weight:bold;">0</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="prevQuestion()">⬅️ Prev</button>
+                            <button class="btn btn-secondary" onclick="nextQuestion()">➡️ Next</button>
                         </div>
                     </div>
                     
-                    <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-bottom: 20px; min-height: 150px;">
-                        <p style="color: var(--text-muted); font-style: italic; text-align: center; margin-top: 50px;">
-                            (Question content from CMS will appear here in Phase 2)
-                        </p>
+                    <div class="q-display" id="qDisplayBox">
+                        <div id="qMediaBadge" class="media-badge" style="display:none;"></div>
+                        <div class="q-text" id="qTextDisplay">(No questions in this round)</div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-primary" id="btnShowQuestion" onclick="broadcastQuestion()" style="display:none; margin-right: 10px;">📺 Push Question to Screen</button>
+                            <button class="btn btn-secondary" id="btnRevealAnswer" onclick="revealAnswer()" style="display:none; border-color: var(--accent); color: var(--accent);">👁️ Reveal Answer</button>
+                        </div>
+                        <div class="a-text" id="aTextDisplay"></div>
+                        <div id="aMediaBadge" class="media-badge" style="display:none; margin-top:5px;"></div>
                     </div>
 
                     <h3>Smart Scoring</h3>
-                    <div id="scoringButtons" class="action-buttons">
-                        <!-- Smart buttons injected here based on teams and round rules -->
-                    </div>
+                    <div id="scoringButtons" class="action-buttons"></div>
                 </div>
-
             </div>
         </div>
     </main>
