@@ -519,5 +519,51 @@
       "fact_en": "A gathering of flamingos is famously dubbed a 'flamboyance' owing to their vibrant plumage.",
       "fact_ml": "അരയന്നക്കൊക്കുകളുടെ ചുവപ്പും പിങ്കും കലർന്ന നിറമാണ് 'ഫ്ലാംബോയൻസ്' എന്ന പേരിന് കാരണം."
     }
-  }
+  },
+  "prelims": [
+    {
+      "num": 1,
+      "serial_no": "P01",
+      "serial": "P01",
+      "is_tiebreaker": false,
+      "question_en": "What is the largest living land mammal in the Western Ghats?",
+      "question_ml": "",
+      "answer_en": "Asian Elephant (Elephas maximus)",
+      "answer_ml": "",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "The Western Ghats host one of the largest populations of Asian Elephants.",
+      "fact_ml": "",
+      "prompt_en": "What is the largest living land mammal in the Western Ghats?",
+      "prompt_ml": "",
+      "q_media_yt_start": 0,
+      "q_media_yt_end": 0,
+      "a_media_yt_start": 0,
+      "a_media_yt_end": 0
+    },
+    {
+      "num": 2,
+      "serial_no": "TB1",
+      "serial": "TB1",
+      "is_tiebreaker": true,
+      "question_en": "New Prelim Question #2",
+      "question_ml": "",
+      "answer_en": "Answer",
+      "answer_ml": "",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "",
+      "fact_ml": "",
+      "prompt_en": "New Prelim Question #2",
+      "prompt_ml": "",
+      "q_media_yt_start": 0,
+      "q_media_yt_end": 0,
+      "a_media_yt_start": 0,
+      "a_media_yt_end": 0
+    }
+  ]
 }

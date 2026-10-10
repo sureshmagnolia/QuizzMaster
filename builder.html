@@ -44,7 +44,8 @@
         <button type="button" class="tab-btn active" data-tab="tab-meta">🏷️ Quiz Info & Theme</button>
         <button type="button" class="tab-btn" data-tab="tab-teams">👥 Teams Manager (<span id="teamCountBadge">4</span>)</button>
         <button type="button" class="tab-btn" data-tab="tab-rounds">🌀 Rounds Architecture (<span id="roundCountBadge">6</span>)</button>
-        <button type="button" class="tab-btn" data-tab="tab-questions">❓ Questions & Media Studio</button>
+        <button type="button" class="tab-btn" data-tab="tab-questions">❓ Stage Questions Studio</button>
+        <button type="button" class="tab-btn" data-tab="tab-prelims">📝 Prelims Studio (<span id="prelimCountBadge">0</span>)</button>
     </nav>
 
     <!-- Main Content Area -->
@@ -368,6 +369,184 @@
                         <div class="form-group">
                             <label class="form-label" for="factMl">Fun Fact (Regional / Malayalam)</label>
                             <textarea id="factMl" class="form-textarea ml-text" placeholder="അധിക വിവരങ്ങൾ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: PRELIMS SCREENING STUDIO -->
+        <section id="tab-prelims" class="tab-pane">
+            <div class="studio-card" style="margin-bottom: 1.25rem;">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">📝 Preliminary Written Screening Architecture</h2>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.2rem;">
+                            Configure the preliminary written test: play questions to the hall, then reveal and explain answers later one-by-one.
+                        </p>
+                    </div>
+                    <div style="display:flex; gap: 0.5rem; align-items:center; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-sm btn-primary" id="btnAddPrelim">+ Add Prelim Q</button>
+                        <button type="button" class="btn btn-sm btn-primary" id="btnAddPrelimTB" style="background:#d97706; border-color:#f59e0b;">🚨 Add Tie-Breaker</button>
+                        <button type="button" class="btn btn-sm" onclick="window.open('prelims_print.html', '_blank')" style="background: rgba(37,99,235,0.25); border: 1px solid #3b82f6; color: #93c5fd;">🖨️ Print Paper (A4)</button>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                    <div class="form-group">
+                        <label class="form-label" for="prelimTimerDuration">Timer per Question (Sec)</label>
+                        <input type="number" id="prelimTimerDuration" class="form-input" value="30" min="5" max="300">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Default Advance Mode</label>
+                        <label class="toggle-switch-label" style="margin-top: 0.35rem;">
+                            <input type="checkbox" id="prelimAutoAdvanceDefault" class="toggle-switch-input" checked>
+                            <span>Auto-advance when timer completes</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Regular Screening Questions</label>
+                        <div id="prelimRegularCountDisplay" style="font-weight: 700; color: var(--accent); padding-top: 0.4rem;">0 Questions</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sudden-Death Tie-Breakers</label>
+                        <div id="prelimTBCountDisplay" style="font-weight: 700; color: #f59e0b; padding-top: 0.4rem;">0 Questions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prelims Questions Layout -->
+            <div class="questions-layout">
+                <!-- Sidebar: Prelim Question List -->
+                <aside class="questions-sidebar">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Questions List:</span>
+                        <span id="prelimTotalBadge" style="font-size: 0.75rem; background: rgba(16,185,129,0.2); color: #34d399; padding: 2px 8px; border-radius: 12px; font-weight: 700;">0 Total</span>
+                    </div>
+                    <div class="question-nav-list" id="prelimNavList" style="max-height: 520px; overflow-y: auto;">
+                        <!-- Injected by JS -->
+                    </div>
+                </aside>
+
+                <!-- Main Form: Active Prelim Question Editor -->
+                <div class="studio-card" id="prelimEditorCard">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span class="round-type-pill" id="activePrelimSerialBadge" style="background: #059669;">P01</span>
+                            <h2 class="card-title" id="activePrelimHeading">Prelim Question Editor</h2>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label class="toggle-switch-label" style="font-size: 0.8rem; margin-right: 0.5rem;">
+                                <input type="checkbox" id="prelimIsTiebreaker" class="toggle-switch-input">
+                                <span style="color: #f59e0b; font-weight: 600;">🚨 Tie-Breaker</span>
+                            </label>
+                            <button type="button" class="btn btn-sm btn-danger" id="btnDeletePrelim">🗑️ Delete Question</button>
+                        </div>
+                    </div>
+
+                    <!-- Question Prompts -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="pQTextEn">Question Prompt (English)</label>
+                            <textarea id="pQTextEn" class="form-textarea" placeholder="Enter prelim screening question text here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pQTextMl">Question Prompt (Regional / Malayalam)</label>
+                            <textarea id="pQTextMl" class="form-textarea ml-text" placeholder="പ്രാഥമിക ചോദ്യം മലയാളത്തിൽ..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Question Media Slot -->
+                    <div class="media-slot-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="color: var(--accent);">📷 Question Visual / Audio Media (Shown during question presentation)</label>
+                            <select id="pQMediaType" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                                <option value="none">No Media (Text Only)</option>
+                                <option value="image">Image (Photograph / Diagram)</option>
+                                <option value="audio">Audio Clip</option>
+                                <option value="video">Local Video (MP4)</option>
+                                <option value="youtube">YouTube Clip</option>
+                            </select>
+                        </div>
+
+                        <div id="pQMediaFields" style="margin-top: 0.75rem; display: none;">
+                            <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
+                                <div class="form-group">
+                                    <label class="form-label" for="pQMediaSrc">Question Media URL or File Path</label>
+                                    <input type="text" id="pQMediaSrc" class="form-input" placeholder="e.g. assets/images/prelim_q1.jpg">
+                                </div>
+                                <div class="form-group p-q-yt-only" style="display:none; width: 100px;">
+                                    <label class="form-label" for="pQMediaYtStart">Start (Sec)</label>
+                                    <input type="number" id="pQMediaYtStart" class="form-input" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group p-q-yt-only" style="display:none; width: 100px;">
+                                    <label class="form-label" for="pQMediaYtEnd">End (Sec)</label>
+                                    <input type="number" id="pQMediaYtEnd" class="form-input" min="0" placeholder="30">
+                                </div>
+                            </div>
+                            <!-- Live Preview Area -->
+                            <div class="media-preview-area" id="pQMediaPreview">
+                                <div class="media-preview-placeholder"><span>Question media preview</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Answer Prompts -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.25rem; margin-bottom: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="pATextEn" style="color: var(--accent);">✓ Official Answer (English)</label>
+                            <input type="text" id="pATextEn" class="form-input" placeholder="Enter official answer...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pATextMl" style="color: var(--accent);">✓ Official Answer (Regional / Malayalam)</label>
+                            <input type="text" id="pATextMl" class="form-input ml-text" placeholder="ഔദ്യോഗിക ശരിയുത്തരം...">
+                        </div>
+                    </div>
+
+                    <!-- Answer Media Slot (Revealed later one by one!) -->
+                    <div class="media-slot-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="color: #3b82f6;">🖼️ Answer Media (Revealed during Answer Phase)</label>
+                            <select id="pAMediaType" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                                <option value="none">No Media (Text Only)</option>
+                                <option value="image">Image (Answer Photograph)</option>
+                                <option value="audio">Audio Clip</option>
+                                <option value="video">Local Video (MP4)</option>
+                                <option value="youtube">YouTube Clip</option>
+                            </select>
+                        </div>
+
+                        <div id="pAMediaFields" style="margin-top: 0.75rem; display: none;">
+                            <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
+                                <div class="form-group">
+                                    <label class="form-label" for="pAMediaSrc">Answer Media URL or File Path</label>
+                                    <input type="text" id="pAMediaSrc" class="form-input" placeholder="e.g. assets/images/prelim_ans1.jpg">
+                                </div>
+                                <div class="form-group p-a-yt-only" style="display:none; width: 100px;">
+                                    <label class="form-label" for="pAMediaYtStart">Start (Sec)</label>
+                                    <input type="number" id="pAMediaYtStart" class="form-input" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group p-a-yt-only" style="display:none; width: 100px;">
+                                    <label class="form-label" for="pAMediaYtEnd">End (Sec)</label>
+                                    <input type="number" id="pAMediaYtEnd" class="form-input" min="0" placeholder="30">
+                                </div>
+                            </div>
+                            <!-- Live Preview Area -->
+                            <div class="media-preview-area" id="pAMediaPreview">
+                                <div class="media-preview-placeholder"><span>Answer media preview</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Facts & Explanations -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="pFactEn">Fun Fact / Background Explanation (English)</label>
+                            <textarea id="pFactEn" class="form-textarea" placeholder="Interesting background trivia or explanation for answer phase..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pFactMl">Fun Fact (Regional / Malayalam)</label>
+                            <textarea id="pFactMl" class="form-textarea ml-text" placeholder="പ്രസക്ത വിവരണം..."></textarea>
                         </div>
                     </div>
                 </div>

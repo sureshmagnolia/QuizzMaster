@@ -395,19 +395,28 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (state.viewMode === 'prelims') {
             const isTiebreaker = state.prelimsMode === 'tiebreaker';
             const isSingle = state.prelimsMode === 'single';
+            const isAnswers = state.prelimsPhase === 'answers';
             if (isTiebreaker) {
                 if (isSingle) {
                     const idx = (state.activePrelimIndex || 0) + 1;
-                    roundTitleEn.textContent = `🚨 Prelims Tie-Breaker (Q${idx} of 5)`;
-                    roundTitleMl.textContent = `പ്രാഥമിക ടൈ-ബ്രേക്കർ (${idx}/5)`;
+                    roundTitleEn.textContent = isAnswers 
+                        ? `💡 Prelims TB Answers (Q${idx} of 5)` 
+                        : `🚨 Prelims Tie-Breaker (Q${idx} of 5)`;
+                    roundTitleMl.textContent = isAnswers 
+                        ? `പ്രാഥമിക ടൈ-ബ്രേക്കർ ശരിയുത്തരം (${idx}/5)` 
+                        : `പ്രാഥമിക ടൈ-ബ്രേക്കർ (${idx}/5)`;
                 } else {
                     roundTitleEn.textContent = "🚨 Prelims Sudden-Death Tie-Breakers (5 Questions)";
                     roundTitleMl.textContent = "പ്രാഥമിക ടൈ-ബ്രേക്കർ ചോദ്യങ്ങൾ";
                 }
             } else if (isSingle) {
                 const idx = (state.activePrelimIndex || 0) + 1;
-                roundTitleEn.textContent = `📝 Prelims Screening (Question ${idx} of 20)`;
-                roundTitleMl.textContent = `പ്രാഥമിക ലിഖിത പരീക്ഷ • ചോദ്യം ${idx} / 20`;
+                roundTitleEn.textContent = isAnswers
+                    ? `💡 Prelims Official Answers (Q${idx} of 20)`
+                    : `📝 Prelims Screening (Question ${idx} of 20)`;
+                roundTitleMl.textContent = isAnswers
+                    ? `പ്രാഥമിക ശരിയുത്തരങ്ങൾ • ചോദ്യം ${idx} / 20`
+                    : `പ്രാഥമിക ലിഖിത പരീക്ഷ • ചോദ്യം ${idx} / 20`;
             } else {
                 roundTitleEn.textContent = "📝 Preliminary Screening Written Test (All 20 Questions)";
                 roundTitleMl.textContent = "പ്രാഥമിക ലിഖിത പരീക്ഷ (20 ചോദ്യങ്ങൾ ഒന്നിച്ച്)";
@@ -1439,14 +1448,15 @@ document.addEventListener('DOMContentLoaded', () => {
             timerRemaining = Math.max(0, Math.ceil((state.timer.targetEndTime - Date.now()) / 1000));
         }
         const isTimerRunning = Boolean(state.timer && state.timer.isRunning);
+        const isAnswersPhase = (state.prelimsPhase === 'answers' || Boolean(state.revealed));
 
-        if (state.revealed) {
+        if (isAnswersPhase) {
             stageArea.innerHTML = `
                 <div class="question-clean-container prelim-single-container answer-revealed">
                     <div class="qn-top-meta">
-                        <span class="qn-round-tag">📝 ${isTiebreaker ? 'Sudden-Death Tie-Breakers' : 'Written Prelims'} • Single Question View</span>
-                        <div class="qn-turn-indicator" style="background: rgba(16, 185, 129, 0.2); border-color: #10B981; color: #6EE7B7;">
-                            ✓ ANSWER REVEALED
+                        <span class="qn-round-tag">💡 ${isTiebreaker ? 'Sudden-Death Tie-Breakers' : 'Written Prelims'} • Official Solutions (1-by-1)</span>
+                        <div class="qn-turn-indicator" style="background: rgba(245, 158, 11, 0.2); border-color: #F59E0B; color: #FCD34D;">
+                            ✓ OFFICIAL ANSWER ON STAGE
                         </div>
                         <span class="qn-count-tag">
                             ${qLabel}
@@ -1462,7 +1472,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="answer-reveal-card prelim-answer-card">
                         <div class="answer-text-area">
                             <div class="answer-title-group">
-                                <span class="answer-badge">✓ Official Answer • ശരിയുത്തരം</span>
+                                <span class="answer-badge" style="background: #F59E0B; color: #000; font-weight: 800;">✓ Official Answer • ശരിയുത്തരം</span>
                                 <div class="answer-title-en">${ansEn}</div>
                                 <div class="answer-title-ml ml-text">${ansMl}</div>
                             </div>
@@ -1478,19 +1488,38 @@ document.addEventListener('DOMContentLoaded', () => {
                             ` : ''}
                         </div>
 
-                        ${q.image ? `
-                            <div class="answer-photo-box">
+                        <div id="prelimAnswerMediaBox" class="answer-photo-box" style="flex: 1; max-width: 480px; min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                            ${(q.image && (!q.a_media_type || q.a_media_type === 'image')) ? `
                                 <img src="${safeImageSrc(q.image, 65)}" alt="${ansEn}" class="answer-photo" />
-                            </div>
-                        ` : ''}
+                            ` : ''}
+                        </div>
                     </div>
 
-                    ${renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker)}
+                    ${renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker, true)}
                 </div>
             `;
+
+            const ansMediaBox = stageArea.querySelector('#prelimAnswerMediaBox');
+            if (ansMediaBox && window.MediaPlayer) {
+                const aType = q.a_media_type || (q.image ? 'image' : 'none');
+                const aSrc = (q.a_media_url || q.image || '').trim();
+                if (aType !== 'none' && aSrc) {
+                    MediaPlayer.render(ansMediaBox, {
+                        type: aType,
+                        src: aSrc,
+                        start: q.a_media_yt_start,
+                        end: q.a_media_yt_end,
+                        autoPlay: true,
+                        caption: q.answer_en
+                    });
+                } else if (!q.image) {
+                    ansMediaBox.style.display = 'none';
+                }
+            }
         } else {
+            const hasQMedia = Boolean(q.q_media_type && q.q_media_type !== 'none' && q.q_media_url);
             stageArea.innerHTML = `
-                <div class="question-clean-container prelim-single-container is-text-only">
+                <div class="question-clean-container prelim-single-container ${hasQMedia ? 'has-media' : 'is-text-only'}">
                     <div class="qn-top-meta">
                         <span class="qn-round-tag">
                             📝 ${isTiebreaker ? '🚨 Sudden-Death Tie-Breaker' : 'Preliminary Written Screening Test'}
@@ -1505,16 +1534,34 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </div>
 
-                    <div class="qn-body-content prelim-single-body">
-                        <div class="qn-text-flow prelim-text-flow">
+                    <div class="qn-body-content prelim-single-body" style="${hasQMedia ? 'display: flex; gap: 24px; align-items: center;' : ''}">
+                        <div class="qn-text-flow prelim-text-flow" style="${hasQMedia ? 'flex: 1;' : ''}">
                             <p class="qn-text-en prelim-text-en">${qEn}</p>
                             <p class="qn-text-ml prelim-text-ml ml-text">${qMl}</p>
                         </div>
+                        ${hasQMedia ? `
+                            <div id="prelimQuestionMediaBox" class="qn-media-flow" style="flex: 1; max-width: 480px; min-height: 240px; display: flex; align-items: center; justify-content: center;">
+                            </div>
+                        ` : ''}
                     </div>
 
-                    ${renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker)}
+                    ${renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker, false)}
                 </div>
             `;
+
+            if (hasQMedia) {
+                const qMediaBox = stageArea.querySelector('#prelimQuestionMediaBox');
+                if (qMediaBox && window.MediaPlayer) {
+                    MediaPlayer.render(qMediaBox, {
+                        type: q.q_media_type,
+                        src: q.q_media_url,
+                        start: q.q_media_yt_start,
+                        end: q.q_media_yt_end,
+                        autoPlay: true,
+                        caption: q.question_en
+                    });
+                }
+            }
         }
 
         requestAnimationFrame(() => {
@@ -1522,21 +1569,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker) {
+    function renderPrelimsProgressTrack(activeIdx, totalQs, isTiebreaker, isAnswersMode = false) {
         let pillsHtml = '';
         for (let i = 0; i < totalQs; i++) {
             const isCompleted = i < activeIdx;
             const isCurrent = i === activeIdx;
             const label = isTiebreaker ? `TB${i+1}` : `${i+1}`;
             pillsHtml += `
-                <div class="prelim-step-pill ${isCurrent ? 'is-active' : ''} ${isCompleted ? 'is-completed' : ''}" title="${isTiebreaker ? 'Tie-Breaker ' + (i+1) : 'Question ' + (i+1)}">
+                <div class="prelim-step-pill ${isCurrent ? 'is-active' : ''} ${isCompleted ? 'is-completed' : ''}" style="${isAnswersMode && isCurrent ? 'border-color: #F59E0B; background: rgba(245, 158, 11, 0.3); color: #FFF;' : ''}" title="${isTiebreaker ? 'Tie-Breaker ' + (i+1) : 'Question ' + (i+1)}">
                     ${isCompleted ? '✓ ' : ''}${label}
                 </div>
             `;
         }
         return `
             <div class="prelim-progress-strip">
-                <span class="prelim-strip-title">Question Progress:</span>
+                <span class="prelim-strip-title">${isAnswersMode ? '💡 Answers Revealed:' : '📝 Question Progress:'}</span>
                 <div class="prelim-step-pills">
                     ${pillsHtml}
                 </div>

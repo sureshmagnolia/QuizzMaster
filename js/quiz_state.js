@@ -256,6 +256,7 @@ class QuizStateManager {
                 timestamp: 0
             },
             prelimsMode: 'single', // 'single', 'all', 'tiebreaker'
+            prelimsPhase: 'questions', // 'questions' (play questions only) or 'answers' (reveal answers 1-by-1)
             activePrelimIndex: 0,
             prelimTimerDuration: 30,
             prelimAutoAdvance: true,

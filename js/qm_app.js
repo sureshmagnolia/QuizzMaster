@@ -778,19 +778,21 @@ function startPrelimsTest() {
 }
 window.startPrelimsTest = startPrelimsTest;
 
-function startPrelimsSingle(duration) {
+function startPrelimsSingle(duration, phase = 'questions') {
     const dur = Number(duration) || QuizState.state.prelimTimerDuration || 30;
     QuizState.setState({
         activePrelimIndex: 0,
         prelimsCompleted: false,
         prelimTimerDuration: dur
     });
-    setAppViewMode('prelims', 'single');
-    setTimerDuration(dur);
+    setAppViewMode('prelims', 'single', phase);
+    if (phase !== 'answers') {
+        setTimerDuration(dur);
+    }
 }
 window.startPrelimsSingle = startPrelimsSingle;
 
-function selectPrelimQuestion(idx) {
+function selectPrelimQuestion(idx, forcePhase = null) {
     stopCurrentAudio();
     const state = QuizState.state;
     const isTiebreaker = state.prelimsMode === 'tiebreaker';
@@ -799,19 +801,22 @@ function selectPrelimQuestion(idx) {
     const validIdx = Math.max(0, Math.min(idx, questions.length - 1));
     const activeQ = questions[validIdx];
     const isSingleOrTB = state.prelimsMode === 'single' || state.prelimsMode === 'tiebreaker';
+    const currentPhase = forcePhase !== null ? forcePhase : (state.prelimsPhase || 'questions');
+    const isAnswersPhase = currentPhase === 'answers';
     const duration = !isSingleOrTB ? (state.timer?.duration || 900) : (state.prelimTimerDuration || 30);
     const wasRunning = Boolean(state.timer && state.timer.isRunning);
-    const shouldRun = wasRunning && isSingleOrTB;
+    const shouldRun = wasRunning && isSingleOrTB && !isAnswersPhase;
     const now = Date.now();
 
     QuizState.setState({
         activePrelimIndex: validIdx,
         currentQuestionId: activeQ ? (activeQ.serial_no || activeQ.num) : (validIdx + 1),
-        revealed: false,
+        revealed: isAnswersPhase,
+        prelimsPhase: currentPhase,
         prelimsCompleted: false,
         timer: {
             duration: duration,
-            remaining: duration,
+            remaining: isAnswersPhase ? duration : (shouldRun ? duration : (state.timer?.remaining || duration)),
             targetEndTime: shouldRun ? (now + (duration * 1000)) : null,
             isRunning: shouldRun
         }
@@ -822,6 +827,20 @@ function selectPrelimQuestion(idx) {
     }
 }
 window.selectPrelimQuestion = selectPrelimQuestion;
+
+function switchPrelimsPhase(phase) {
+    const state = QuizState.state;
+    const isTiebreaker = state.prelimsMode === 'tiebreaker';
+    const targetMode = isTiebreaker ? 'tiebreaker' : 'single';
+    setAppViewMode('prelims', targetMode, phase);
+    showQMNotification(
+        phase === 'answers'
+            ? '💡 Switched to Answers Phase (Revealing answers 1-by-1 on stage)!'
+            : '📝 Switched to Questions Phase (Playing questions with hidden answers).',
+        phase === 'answers' ? 'success' : 'info'
+    );
+}
+window.switchPrelimsPhase = switchPrelimsPhase;
 
 function advancePrelimQuestion() {
     const state = QuizState.state;
@@ -1032,11 +1051,16 @@ function nextQuestion() {
         const isTiebreaker = state.prelimsMode === 'tiebreaker';
         const questions = QUIZ_DATA.prelims ? QUIZ_DATA.prelims.filter(q => isTiebreaker ? q.is_tiebreaker : !q.is_tiebreaker) : [];
         const curIdx = state.activePrelimIndex || 0;
+        const isAnswers = state.prelimsPhase === 'answers';
         if (curIdx < questions.length - 1) {
-            selectPrelimQuestion(curIdx + 1);
+            selectPrelimQuestion(curIdx + 1, state.prelimsPhase);
         } else {
-            QuizState.setState({ prelimsCompleted: true });
-            showQMNotification('🏁 All Preliminary questions completed.', 'info');
+            if (!isAnswers) {
+                QuizState.setState({ prelimsCompleted: true });
+                showQMNotification('🎯 All Preliminary questions finished! Ready to switch to Answers Phase.', 'info');
+            } else {
+                showQMNotification('🏁 Completed reviewing all preliminary answers!', 'success');
+            }
         }
         return;
     }
@@ -1101,7 +1125,7 @@ function prevQuestion() {
     if (state.viewMode === 'prelims') {
         const curIdx = state.activePrelimIndex || 0;
         if (curIdx > 0) {
-            selectPrelimQuestion(curIdx - 1);
+            selectPrelimQuestion(curIdx - 1, state.prelimsPhase);
         }
         return;
     }
@@ -1177,7 +1201,7 @@ function toggleReveal() {
     });
 }
 
-function setAppViewMode(mode, prelimsMode = 'single') {
+function setAppViewMode(mode, prelimsMode = 'single', prelimsPhase = 'questions') {
     if (mode === 'stage') {
         activeRoundIdx = 0;
         activeQuestionIdx = 0;
@@ -1206,13 +1230,15 @@ function setAppViewMode(mode, prelimsMode = 'single') {
         const activeQ = questions[curIdx];
         const isSingleOrTB = prelimsMode === 'single' || prelimsMode === 'tiebreaker';
         const duration = !isSingleOrTB ? 900 : (QuizState.state.prelimTimerDuration || 30);
+        const isAnswers = prelimsPhase === 'answers';
 
         QuizState.setState({
             viewMode: 'prelims',
             prelimsMode: prelimsMode,
+            prelimsPhase: prelimsPhase,
             activePrelimIndex: curIdx,
             currentQuestionId: activeQ ? (activeQ.serial_no || activeQ.num) : 1,
-            revealed: false,
+            revealed: isAnswers,
             prelimsCompleted: false,
             timer: {
                 duration: duration,
@@ -1236,13 +1262,15 @@ function setAppViewMode(mode, prelimsMode = 'single') {
     // Update Top View Mode Buttons
     const btnModeWelcome = document.getElementById('btnModeWelcome');
     const btnModePrelims = document.getElementById('btnModePrelims');
+    const btnModePrelimsAnswers = document.getElementById('btnModePrelimsAnswers');
     const btnModePrelimsAll = document.getElementById('btnModePrelimsAll');
     const btnModePrelimsTB = document.getElementById('btnModePrelimsTB');
     const btnModeStage = document.getElementById('btnModeStage');
     const btnModeWinner = document.getElementById('btnModeWinner');
 
     if (btnModeWelcome) btnModeWelcome.classList.toggle('round-tab-active', mode === 'welcome');
-    if (btnModePrelims) btnModePrelims.classList.toggle('round-tab-active', mode === 'prelims' && prelimsMode === 'single');
+    if (btnModePrelims) btnModePrelims.classList.toggle('round-tab-active', mode === 'prelims' && prelimsMode === 'single' && prelimsPhase !== 'answers');
+    if (btnModePrelimsAnswers) btnModePrelimsAnswers.classList.toggle('round-tab-active', mode === 'prelims' && prelimsMode === 'single' && prelimsPhase === 'answers');
     if (btnModePrelimsAll) btnModePrelimsAll.classList.toggle('round-tab-active', mode === 'prelims' && prelimsMode === 'all');
     if (btnModePrelimsTB) btnModePrelimsTB.classList.toggle('round-tab-active', mode === 'prelims' && prelimsMode === 'tiebreaker');
     if (btnModeStage) btnModeStage.classList.toggle('round-tab-active', mode === 'stage');
@@ -1471,9 +1499,12 @@ function renderQMState(state) {
                     ? `Prelims TB: Q ${(state.activePrelimIndex || 0) + 1} of 5` 
                     : "5 Tie-Breakers Projected on Screen";
             } else if (isSingle) {
+                const isAnswers = state.prelimsPhase === 'answers';
                 const targetQ = QUIZ_DATA.prelims ? QUIZ_DATA.prelims.filter(q => !q.is_tiebreaker)[state.activePrelimIndex || 0] : null;
                 const sNo = targetQ ? (targetQ.serial_no || '') : '';
-                tracker.textContent = `Prelims Q ${(state.activePrelimIndex || 0) + 1} of 20 ${sNo ? '[' + sNo + ']' : ''}`;
+                tracker.textContent = isAnswers 
+                    ? `💡 Prelim Answer ${(state.activePrelimIndex || 0) + 1} of 20 ${sNo ? '[' + sNo + ']' : ''}`
+                    : `Prelims Q ${(state.activePrelimIndex || 0) + 1} of 20 ${sNo ? '[' + sNo + ']' : ''}`;
             } else {
                 tracker.textContent = "All 20 Questions Projected on Screen";
             }
@@ -1496,8 +1527,9 @@ function renderQMState(state) {
     const btnNext = document.getElementById('btnNextQuestion');
     const btnPrev = document.getElementById('btnPrevQuestion');
     if (btnPrev && state.viewMode === 'prelims' && state.prelimsMode === 'single') {
+        const isAnswers = state.prelimsPhase === 'answers';
         const curIdx = state.activePrelimIndex || 0;
-        btnPrev.innerHTML = curIdx > 0 ? `◀ Prev Q${curIdx}` : '◀ Prev';
+        btnPrev.innerHTML = curIdx > 0 ? (isAnswers ? `◀ Prev Ans ${curIdx}` : `◀ Prev Q${curIdx}`) : '◀ Prev';
     } else if (btnPrev) {
         btnPrev.innerHTML = '◀ Prev';
     }
@@ -1505,16 +1537,17 @@ function renderQMState(state) {
     if (btnNext) {
         if (state.viewMode === 'prelims' && state.prelimsMode === 'single') {
             const isTiebreaker = state.prelimsMode === 'tiebreaker';
+            const isAnswers = state.prelimsPhase === 'answers';
             const total = isTiebreaker ? 5 : 20;
             const curIdx = state.activePrelimIndex || 0;
             if (curIdx >= total - 1) {
-                btnNext.innerHTML = 'Finish Prelims 🎯';
+                btnNext.innerHTML = isAnswers ? 'Finish Answers 🏁' : 'Finish Prelims 🎯';
                 btnNext.className = 'btn-primary';
             } else {
-                btnNext.innerHTML = `Q${curIdx + 2} Next ▶`;
-                btnNext.className = 'btn-secondary';
+                btnNext.innerHTML = isAnswers ? `Ans ${curIdx + 2} Next ▶` : `Q${curIdx + 2} Next ▶`;
+                btnNext.className = isAnswers ? 'btn-primary' : 'btn-secondary';
             }
-            btnNext.style.boxShadow = 'none';
+            btnNext.style.boxShadow = isAnswers ? '0 0 10px rgba(245, 158, 11, 0.5)' : 'none';
         } else if (state.viewMode !== 'stage') {
             btnNext.innerHTML = 'Next ▶';
             btnNext.className = 'btn-secondary';
@@ -1601,11 +1634,14 @@ function renderQMMainDetails(state) {
                         ${isTiebreaker ? 'All 5 Tie-Breakers Completed!' : 'All 20 Preliminary Questions Completed!'}
                     </h3>
                     <p style="color: #E2E8F0; font-size: 0.98rem; max-width: 620px; margin: 0 auto 16px auto; line-height: 1.5;">
-                        The public display is now showing the <strong>Answer Sheet Submission & Scoring</strong> slide. Collect the student team test papers now.
+                        The questions test run has ended. You can now reveal official answers <strong>one by one</strong> on the stage projector display or review the papers.
                     </p>
                     <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                        <button class="btn-secondary" onclick="selectPrelimQuestion(0)" style="padding: 9px 18px; font-weight: 700;">
-                            🔄 Review from Q1 (1-by-1)
+                        <button class="qm-stage-launch-btn" onclick="startPrelimsSingle(30, 'answers')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; padding: 10px 24px; font-weight: 800; border: 2px solid #fbbf24; box-shadow: 0 4px 14px rgba(245,158,11,0.4);">
+                            💡 START ANSWERS RUN (REVEAL 1-BY-1) 👉
+                        </button>
+                        <button class="btn-secondary" onclick="startPrelimsSingle(30, 'questions')" style="padding: 9px 18px; font-weight: 700;">
+                            🔄 Re-play Questions from Q1
                         </button>
                         <button class="btn-secondary" onclick="setAppViewMode('prelims', 'all')" style="padding: 9px 18px; font-weight: 700;">
                             📋 Project All 20 Grid
@@ -1655,48 +1691,98 @@ function renderQMMainDetails(state) {
             const ansMl = q.answer_ml || '';
             const isAutoOn = state.prelimAutoAdvance !== false;
             const dur = state.prelimTimerDuration || 30;
+            const isAnswersPhase = (state.prelimsPhase === 'answers');
+            const hasQMedia = Boolean(q.q_media_type && q.q_media_type !== 'none' && q.q_media_url);
+            const hasAMedia = Boolean((q.a_media_type && q.a_media_type !== 'none' && q.a_media_url) || q.image);
 
             detailsContainer.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Top Control Bar -->
+                    <!-- Top Control Bar with Phase Switcher -->
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="badge ${isTiebreaker ? 'badge-gold' : 'badge-emerald'}" style="font-size: 0.85rem; padding: 4px 10px;">
-                                ${serialBadge} • Question ${activeIdx + 1} of ${totalQs}
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <div style="display: inline-flex; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 3px; gap: 4px;">
+                                <button class="${!isAnswersPhase ? 'btn-primary' : 'btn-secondary'}" onclick="switchPrelimsPhase('questions')" style="padding: 4px 12px; font-size: 0.8rem; font-weight: 800; ${!isAnswersPhase ? 'background: #059669;' : ''}">
+                                    📝 Questions Run
+                                </button>
+                                <button class="${isAnswersPhase ? 'btn-primary' : 'btn-secondary'}" onclick="switchPrelimsPhase('answers')" style="padding: 4px 12px; font-size: 0.8rem; font-weight: 800; ${isAnswersPhase ? 'background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: 1.5px solid #fbbf24; box-shadow: 0 0 10px rgba(245,158,11,0.5);' : ''}">
+                                    💡 Answers Run (1-by-1)
+                                </button>
+                            </div>
+                            <span class="badge ${isAnswersPhase ? 'badge-gold' : (isTiebreaker ? 'badge-gold' : 'badge-emerald')}" style="font-size: 0.85rem; padding: 4px 10px;">
+                                ${isAnswersPhase ? '💡 Answer Mode' : '📝 Question Mode'} • ${serialBadge} (${activeIdx + 1}/${totalQs})
                             </span>
-                            <span class="badge ${isAutoOn ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer;" onclick="togglePrelimAutoAdvance()" title="Click to toggle auto-advance">
-                                ${isAutoOn ? '⚡ Auto-Advance: ' + dur + 's' : '⏸️ Manual Advance'}
-                            </span>
+                            ${!isAnswersPhase ? `
+                                <span class="badge ${isAutoOn ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.75rem; padding: 3px 8px; cursor: pointer;" onclick="togglePrelimAutoAdvance()" title="Click to toggle auto-advance">
+                                    ${isAutoOn ? '⚡ Auto-Advance: ' + dur + 's' : '⏸️ Manual Advance'}
+                                </span>
+                            ` : ''}
                         </div>
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <button class="btn-secondary" onclick="setAppViewMode('prelims', 'all')" style="padding: 4px 12px; font-size: 0.82rem;" title="Switch to view all 20 questions grid">
-                                📋 Switch to All-20 Grid
+                                📋 All-20 Grid
                             </button>
                             <button onclick="window.open('prelims_print.html', '_blank')" style="background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 6px; padding: 4px 12px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                🖨️ Print Paper (A4)
+                                🖨️ Print Paper
                             </button>
                             <button class="btn-secondary btn-edit" onclick="openEditQuestionModal('${q.serial_no || q.num}')" style="padding: 4px 12px; font-size: 0.82rem;" title="Edit this prelim question text, answer or photo">
-                                ✏️ Edit This Question
+                                ✏️ Edit Question
                             </button>
                         </div>
                     </div>
 
-                    <!-- Question Body (Text Only) -->
-                    <div style="background: rgba(4, 18, 12, 0.75); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
-                        <p style="margin: 0; font-size: 1.15rem; color: #FFFFFF; font-weight: 700; line-height: 1.45;">
-                            ${qEn}
-                        </p>
-                        <p class="ml-text" style="margin: 0; font-size: 1.05rem; color: #6EE7B7; line-height: 1.45;">
-                            ${qMl}
-                        </p>
+                    <!-- Quick Jump Pills Strip -->
+                    <div style="display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 6px 4px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); scrollbar-width: thin;">
+                        <span style="font-size: 0.72rem; color: #94A3B8; font-weight: 800; text-transform: uppercase; white-space: nowrap; margin-right: 4px;">
+                            ${isAnswersPhase ? '💡 Jump to Ans:' : '📝 Jump to Q:'}
+                        </span>
+                        ${questions.map((item, idx) => {
+                            const isCurrent = idx === activeIdx;
+                            const pillLabel = isTiebreaker ? `TB${idx + 1}` : `${idx + 1}`;
+                            return `
+                                <button onclick="selectPrelimQuestion(${idx}, '${isAnswersPhase ? 'answers' : 'questions'}')" style="cursor: pointer; border-radius: 6px; padding: 3px 8px; font-size: 0.78rem; font-weight: 800; border: ${isCurrent ? (isAnswersPhase ? '2px solid #F59E0B' : '2px solid #10B981') : '1px solid rgba(255,255,255,0.12)'}; background: ${isCurrent ? (isAnswersPhase ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)') : 'rgba(15, 23, 42, 0.6)'}; color: ${isCurrent ? '#FFF' : '#CBD5E1'}; min-width: 32px; text-align: center;">
+                                    ${pillLabel}
+                                </button>
+                            `;
+                        }).join('')}
                     </div>
 
-                    <!-- QM Master Answer Spotlight Card (Shows Official Answer & Image for QM Review) -->
-                    <div style="background: linear-gradient(135deg, rgba(5, 150, 105, 0.25), rgba(4, 120, 87, 0.15)); border: 1.5px solid #10B981; border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <!-- Question Body -->
+                    <div style="background: rgba(4, 18, 12, 0.75); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                            <div style="flex: 1;">
+                                <p style="margin: 0; font-size: 1.15rem; color: #FFFFFF; font-weight: 700; line-height: 1.45;">
+                                    ${qEn}
+                                </p>
+                                <p class="ml-text" style="margin: 4px 0 0 0; font-size: 1.05rem; color: #6EE7B7; line-height: 1.45;">
+                                    ${qMl}
+                                </p>
+                            </div>
+                            ${hasQMedia ? `
+                                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 6px 8px; text-align: center; flex-shrink: 0; min-width: 90px;">
+                                    <span style="font-size: 0.65rem; color: #34D399; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 2px;">
+                                        📎 Q Media [${q.q_media_type}]
+                                    </span>
+                                    ${q.q_media_type === 'image' ? `
+                                        <img src="${safeImageSrc(q.q_media_url, 48)}" style="width: 80px; height: 55px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'" />
+                                    ` : `
+                                        <span style="font-size: 1.2rem;">🎬</span>
+                                    `}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- QM Master Answer Spotlight Card -->
+                    <div style="background: ${isAnswersPhase ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(180, 83, 9, 0.18))' : 'linear-gradient(135deg, rgba(5, 150, 105, 0.25), rgba(4, 120, 87, 0.15))'}; border: ${isAnswersPhase ? '2px solid #F59E0B; box-shadow: 0 0 16px rgba(245, 158, 11, 0.3)' : '1.5px solid #10B981'}; border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div style="flex: 1; min-width: 260px;">
-                            <span style="font-size: 0.72rem; text-transform: uppercase; color: #34D399; font-weight: 800; letter-spacing: 0.06em; display: block; margin-bottom: 2px;">
-                                🎯 Master Answer Key (Official Answer)
-                            </span>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                                <span style="font-size: 0.72rem; text-transform: uppercase; color: ${isAnswersPhase ? '#FBBF24' : '#34D399'}; font-weight: 800; letter-spacing: 0.06em;">
+                                    🎯 Official Answer Key
+                                </span>
+                                <span class="badge ${isAnswersPhase ? 'badge-gold' : 'badge-emerald'}" style="font-size: 0.7rem; padding: 2px 8px; font-weight: 800;">
+                                    ${isAnswersPhase ? '💡 LIVE ON PUBLIC SCREEN' : '🔒 HIDDEN ON PUBLIC SCREEN'}
+                                </span>
+                            </div>
                             <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
                                 <span style="font-size: 1.25rem; font-weight: 900; color: #FFFFFF;">${ansEn}</span>
                                 <span class="ml-text" style="font-size: 1.1rem; font-weight: 700; color: var(--text-gold);">(${ansMl})</span>
@@ -1708,40 +1794,48 @@ function renderQMMainDetails(state) {
                             ` : ''}
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            ${q.image ? `
-                                <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: rgba(0,0,0,0.3); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 6px; padding: 4px 6px;">
-                                    <img src="${safeImageSrc(q.image, 48)}" style="width: 76px; height: 54px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'" />
-                                    <span style="font-size: 0.65rem; color: #6EE7B7; font-weight: 600;">Answer Photo</span>
+                            ${hasAMedia ? `
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; background: rgba(0,0,0,0.3); border: 1px solid ${isAnswersPhase ? 'rgba(245, 158, 11, 0.5)' : 'rgba(16, 185, 129, 0.4)'}; border-radius: 6px; padding: 4px 6px;">
+                                    <img src="${safeImageSrc(q.a_media_url || q.image, 48)}" style="width: 76px; height: 54px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'" />
+                                    <span style="font-size: 0.65rem; color: ${isAnswersPhase ? '#FCD34D' : '#6EE7B7'}; font-weight: 600;">Answer Media</span>
                                 </div>
                             ` : ''}
-                            <span class="badge ${state.revealed ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.75rem; padding: 5px 10px;">
-                                ${state.revealed ? '👁️ Answer & Photo Visible on Public Screen' : '🔒 Question Only on Screen (Answer & Photo Hidden)'}
-                            </span>
+                            <button class="btn-timer" onclick="switchPrelimsPhase('${isAnswersPhase ? 'questions' : 'answers'}')" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                                ${isAnswersPhase ? '◀ Back to Question Mode' : '💡 Switch to Answer Mode'}
+                            </button>
                         </div>
                     </div>
 
                     <!-- Quick Navigation & Timer HUD Strip -->
                     <div class="qm-prelim-timer-bar">
-                        <div class="qm-prelim-timer-controls">
-                            <span class="qm-prelim-timer-label">⏱️ Question Timer:</span>
-                            <div class="qm-prelim-timer-presets">
-                                ${[15, 20, 30, 45, 60, 90, 120].map(s => `
-                                    <button class="qm-timer-preset-btn ${dur === s ? 'is-active' : ''}" onclick="setQuestionTimerPreset(${s})">
-                                        ${s}s
-                                    </button>
-                                `).join('')}
+                        ${!isAnswersPhase ? `
+                            <div class="qm-prelim-timer-controls">
+                                <span class="qm-prelim-timer-label">⏱️ Question Timer:</span>
+                                <div class="qm-prelim-timer-presets">
+                                    ${[15, 20, 30, 45, 60, 90, 120].map(s => `
+                                        <button class="qm-timer-preset-btn ${dur === s ? 'is-active' : ''}" onclick="setQuestionTimerPreset(${s})">
+                                            ${s}s
+                                        </button>
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
+                        ` : `
+                            <div style="color: #FCD34D; font-weight: 800; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                                <span>💡 Answers Walkthrough (1-by-1)</span>
+                            </div>
+                        `}
 
                         <div style="display: flex; gap: 6px; align-items: center;">
-                            <button class="btn-timer ${isAutoOn ? 'btn-auto-on' : 'btn-auto-off'}" onclick="togglePrelimAutoAdvance()" title="Toggle auto-advance when timer completes">
-                                ${isAutoOn ? '⚡ Auto-Advance: ON' : '⏸️ Auto-Advance: OFF'}
-                            </button>
+                            ${!isAnswersPhase ? `
+                                <button class="btn-timer ${isAutoOn ? 'btn-auto-on' : 'btn-auto-off'}" onclick="togglePrelimAutoAdvance()" title="Toggle auto-advance when timer completes">
+                                    ${isAutoOn ? '⚡ Auto-Advance: ON' : '⏸️ Auto-Advance: OFF'}
+                                </button>
+                            ` : ''}
                             <button class="btn-secondary" onclick="prevQuestion()" ${activeIdx === 0 ? 'disabled style="opacity: 0.5;"' : ''}>
-                                ◀ Prev Q
+                                ${isAnswersPhase ? '◀ Prev Ans' : '◀ Prev Q'}
                             </button>
                             <button class="${activeIdx === totalQs - 1 ? 'btn-primary' : 'btn-secondary'}" onclick="nextQuestion()">
-                                ${activeIdx === totalQs - 1 ? 'Finish Prelims 🎯' : 'Next Q ▶'}
+                                ${activeIdx === totalQs - 1 ? (isAnswersPhase ? 'Finish Answers 🏁' : 'Finish Prelims 🎯') : (isAnswersPhase ? 'Next Ans ▶' : 'Next Q ▶')}
                             </button>
                         </div>
                     </div>

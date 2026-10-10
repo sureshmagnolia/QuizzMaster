@@ -1,4 +1,4 @@
-const PRESET_SAMPLE_MULTIMEDIA = {
+window.QUIZ_DATA_SAMPLE = {
   "version": "2.0.0",
   "meta": {
     "title": "QuizzMaster Pro — Universal Demonstration Quiz",
@@ -501,5 +501,93 @@ const PRESET_SAMPLE_MULTIMEDIA = {
       "fact_en": "A gathering of flamingos is famously dubbed a 'flamboyance' owing to their vibrant plumage.",
       "fact_ml": "അരയന്നക്കൊക്കുകളുടെ ചുവപ്പും പിങ്കും കലർന്ന നിറമാണ് 'ഫ്ലാംബോയൻസ്' എന്ന പേരിന് കാരണം."
     }
-  }
+  },
+  "prelims": [
+    {
+      "num": 1,
+      "serial_no": "SMP-P01",
+      "question_en": "Identify this iconic hornbill endemic to the Western Ghats, renowned for its grey plumage and yellowish bill.",
+      "question_ml": "പശ്ചിമഘട്ടത്തിൽ മാത്രം കാണപ്പെടുന്ന, ചാരനിറത്തിലുള്ള തൂവലുകളോടുകൂടിയ ഈ തനത് വേഴാമ്പൽ ഏതാണ്?",
+      "q_media_type": "image",
+      "q_media_url": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1200&q=80",
+      "answer_en": "Malabar Grey Hornbill (Ocyceros griseus)",
+      "answer_ml": "കോഴി വേഴാമ്പൽ (Malabar Grey Hornbill)",
+      "a_media_type": "image",
+      "a_media_url": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1200&q=80",
+      "is_tiebreaker": false,
+      "fact_en": "Unlike the Great Hornbill, it lacks an aerial casque on top of its bill."
+    },
+    {
+      "num": 2,
+      "serial_no": "SMP-P02",
+      "question_en": "Listen to this distinctive aquatic call recorded along the Periyar Lake. Which semi-aquatic mammal produces this vocalization?",
+      "question_ml": "പെരിയാർ തടാകത്തിൽ നിന്ന് റെക്കോർഡ് ചെയ്ത ഈ ജല ജീവിയുടെ ശബ്ദം കേൾക്കുക. ഇത് ഏത് സസ്തനിയുടേതാണ്?",
+      "q_media_type": "audio",
+      "q_media_url": "audio/western_tragopan.mp3",
+      "answer_en": "Smooth-coated Otter (Lutrogale perspicillata)",
+      "answer_ml": "നീർനായ (Smooth-coated Otter)",
+      "a_media_type": "image",
+      "a_media_url": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80",
+      "is_tiebreaker": false,
+      "fact_en": "Smooth-coated otters use complex whistle and chirp vocabularies to coordinate group fish-hunting."
+    },
+    {
+      "num": 3,
+      "serial_no": "SMP-P03",
+      "question_en": "Watch this short clip of a predator hunting in rainforest canopies. Which arboreal mammal is highlighted?",
+      "question_ml": "ഈ ഹ്രസ്വ വീഡിയോ ദൃശ്യം ശ്രദ്ധിക്കുക. മഴക്കാടുകളിൽ ജീവിക്കുന്ന ഏത് ജീവിയാണിത്?",
+      "q_media_type": "youtube",
+      "q_media_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "q_media_yt_start": 0,
+      "q_media_yt_end": 15,
+      "answer_en": "Nilgiri Marten (Martes gwatkinsii)",
+      "answer_ml": "കാട്ടുനായ / നീലഗിരി മാർട്ടൻ",
+      "a_media_type": "image",
+      "a_media_url": "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?auto=format&fit=crop&w=1200&q=80",
+      "is_tiebreaker": false,
+      "fact_en": "The only species of marten native to southern India, with a distinctive bright yellow-orange throat."
+    },
+    {
+      "num": 4,
+      "serial_no": "SMP-P04",
+      "question_en": "Which ancient gymnosperm tree species found in the shola forests of Anamalai is known as the only native conifer genus of Peninsular India?",
+      "question_ml": "ആനമലയിലെ ചോലവനങ്ങളിൽ കാണപ്പെടുന്ന ഉപദ്വീപീയ ഇന്ത്യയിലെ ഏക തനത് കോണിഫർ വന്മരം ഏതാണ്?",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "answer_en": "Podocarpus wallichianus (Nattakil / Malakkadambu)",
+      "answer_ml": "നാട്ടകിൽ / പൊഡോകാർപസ്",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "is_tiebreaker": false,
+      "fact_en": "Podocarpus belongs to an ancient Gondwanan lineage dating back to the Jurassic period."
+    },
+    {
+      "num": 5,
+      "serial_no": "SMP-TB01",
+      "question_en": "TIE-BREAKER: What is the official state butterfly of Kerala, celebrated for its emerald swallowtail coloration?",
+      "question_ml": "സഡൻ ഡെത്ത് ടൈ-ബ്രേക്കർ: കേരളത്തിന്റെ സംസ്ഥാന ശലഭമായ ബുദ്ധമയൂരിയുടെ ശാസ്ത്രീയ നാമം എന്ത്?",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "answer_en": "Papilio buddha (Malabar Banded Peacock / Buddhamayoori)",
+      "answer_ml": "ബുദ്ധമയൂരി (Papilio buddha)",
+      "a_media_type": "image",
+      "a_media_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80",
+      "is_tiebreaker": true,
+      "fact_en": "Declared the official state butterfly of Kerala in 2018."
+    },
+    {
+      "num": 6,
+      "serial_no": "SMP-TB02",
+      "question_en": "TIE-BREAKER: Name the highest peak in the Western Ghats south of the Himalayas, rising to 2,695 meters in Idukki.",
+      "question_ml": "സഡൻ ഡെത്ത് ടൈ-ബ്രേക്കർ: ദക്ഷിണേന്ത്യയിലെ ഏറ്റവും ഉയരം കൂടിയ കൊടുമുടി ഏത്?",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "answer_en": "Anamudi (2,695 m / 8,842 ft)",
+      "answer_ml": "ആനമുടി (2,695 മീറ്റർ)",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "is_tiebreaker": true,
+      "fact_en": "Located inside Eravikulam National Park."
+    }
+  ]
 };

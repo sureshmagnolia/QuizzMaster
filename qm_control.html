@@ -32,9 +32,10 @@
             <!-- View Mode Switcher -->
             <div class="qm-mode-nav">
                 <button class="round-tab-btn round-tab-active" id="btnModeWelcome" onclick="setAppViewMode('welcome')">🏠 Welcome</button>
-                <button class="round-tab-btn" id="btnModePrelims" onclick="setAppViewMode('prelims', 'single')" title="Display Prelims one by one with timer">📝 Prelims (1 by 1)</button>
-                <button class="round-tab-btn" id="btnModePrelimsAll" onclick="setAppViewMode('prelims', 'all')" title="Display all 20 Prelim questions together in a grid">📋 Prelims (All 20)</button>
-                <button class="round-tab-btn" id="btnModePrelimsTB" onclick="setAppViewMode('prelims', 'tiebreaker')" title="Display Prelims Tie-Breakers one by one with timer">🚨 Prelims TB (1 by 1)</button>
+                <button class="round-tab-btn" id="btnModePrelims" onclick="setAppViewMode('prelims', 'single', 'questions')" title="Display Prelims one by one with questions only (timer)">📝 Prelims (1 by 1)</button>
+                <button class="round-tab-btn" id="btnModePrelimsAnswers" onclick="setAppViewMode('prelims', 'single', 'answers')" title="Reveal and discuss Prelims answers one by one" style="background: rgba(16, 185, 129, 0.25); border: 1px solid #10b981; color: #6ee7b7; font-weight: 700;">💡 Prelims Answers (1 by 1)</button>
+                <button class="round-tab-btn" id="btnModePrelimsAll" onclick="setAppViewMode('prelims', 'all')" title="Display all Prelim questions together in a grid">📋 Prelims (All Grid)</button>
+                <button class="round-tab-btn" id="btnModePrelimsTB" onclick="setAppViewMode('prelims', 'tiebreaker', 'questions')" title="Display Prelims Tie-Breakers one by one">🚨 Prelims TB (1 by 1)</button>
                 <button class="round-tab-btn" onclick="window.open('prelims_print.html', '_blank')" style="background: rgba(37, 99, 235, 0.25); border: 1px solid #3b82f6; color: #93c5fd; font-weight: 700;" title="Print A4 Written Test Paper">🖨️ Print Paper</button>
                 <button class="round-tab-btn" id="btnModeStage" onclick="setAppViewMode('stage')">🎯 Stage Quiz</button>
                 <button class="round-tab-btn" id="btnModeWinner" onclick="setAppViewMode('winner')">🏆 Champions</button>

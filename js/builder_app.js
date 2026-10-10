@@ -9,6 +9,7 @@
     let currentQuiz = null;
     let selectedRoundIndex = 0;
     let selectedQuestionId = null;
+    let selectedPrelimIndex = 0;
     let stateManager = null;
 
     // DOM Elements
@@ -104,6 +105,42 @@
         elements.factEn = document.getElementById('factEn');
         elements.factMl = document.getElementById('factMl');
         elements.statusToast = document.getElementById('statusToast');
+
+        // Prelims Tab
+        elements.prelimCountBadge = document.getElementById('prelimCountBadge');
+        elements.btnAddPrelim = document.getElementById('btnAddPrelim');
+        elements.btnAddPrelimTB = document.getElementById('btnAddPrelimTB');
+        elements.prelimTimerDuration = document.getElementById('prelimTimerDuration');
+        elements.prelimAutoAdvanceDefault = document.getElementById('prelimAutoAdvanceDefault');
+        elements.prelimRegularCountDisplay = document.getElementById('prelimRegularCountDisplay');
+        elements.prelimTBCountDisplay = document.getElementById('prelimTBCountDisplay');
+        elements.prelimTotalBadge = document.getElementById('prelimTotalBadge');
+        elements.prelimNavList = document.getElementById('prelimNavList');
+        elements.activePrelimSerialBadge = document.getElementById('activePrelimSerialBadge');
+        elements.activePrelimHeading = document.getElementById('activePrelimHeading');
+        elements.prelimIsTiebreaker = document.getElementById('prelimIsTiebreaker');
+        elements.btnDeletePrelim = document.getElementById('btnDeletePrelim');
+
+        elements.pQTextEn = document.getElementById('pQTextEn');
+        elements.pQTextMl = document.getElementById('pQTextMl');
+        elements.pQMediaType = document.getElementById('pQMediaType');
+        elements.pQMediaFields = document.getElementById('pQMediaFields');
+        elements.pQMediaSrc = document.getElementById('pQMediaSrc');
+        elements.pQMediaYtStart = document.getElementById('pQMediaYtStart');
+        elements.pQMediaYtEnd = document.getElementById('pQMediaYtEnd');
+        elements.pQMediaPreview = document.getElementById('pQMediaPreview');
+
+        elements.pATextEn = document.getElementById('pATextEn');
+        elements.pATextMl = document.getElementById('pATextMl');
+        elements.pAMediaType = document.getElementById('pAMediaType');
+        elements.pAMediaFields = document.getElementById('pAMediaFields');
+        elements.pAMediaSrc = document.getElementById('pAMediaSrc');
+        elements.pAMediaYtStart = document.getElementById('pAMediaYtStart');
+        elements.pAMediaYtEnd = document.getElementById('pAMediaYtEnd');
+        elements.pAMediaPreview = document.getElementById('pAMediaPreview');
+
+        elements.pFactEn = document.getElementById('pFactEn');
+        elements.pFactMl = document.getElementById('pFactMl');
     }
 
     function initQuizState() {
@@ -176,7 +213,43 @@
                     fact_en: '',
                     fact_ml: ''
                 }
-            }
+            },
+            prelimTimerDuration: 30,
+            prelimAutoAdvance: true,
+            prelims: [
+                {
+                    num: 1,
+                    serial_no: 'P01',
+                    serial: 'P01',
+                    is_tiebreaker: false,
+                    question_en: 'Sample Prelim 1: Enter your screening question prompt here.',
+                    question_ml: 'മാതൃകാ പ്രാഥമിക ചോദ്യം 1...',
+                    answer_en: 'Sample Answer 1',
+                    answer_ml: 'മാതൃകാ ഉത്തരം 1',
+                    q_media_type: 'none',
+                    q_media_url: '',
+                    a_media_type: 'none',
+                    a_media_url: '',
+                    fact_en: 'Interesting background note for answer phase.',
+                    fact_ml: 'ഉത്തര വിശദീകരണം.'
+                },
+                {
+                    num: 2,
+                    serial_no: 'P02',
+                    serial: 'P02',
+                    is_tiebreaker: false,
+                    question_en: 'Sample Prelim 2: Enter question prompt here.',
+                    question_ml: 'മാതൃകാ പ്രാഥമിക ചോദ്യം 2...',
+                    answer_en: 'Sample Answer 2',
+                    answer_ml: 'മാതൃകാ ഉത്തരം 2',
+                    q_media_type: 'none',
+                    q_media_url: '',
+                    a_media_type: 'none',
+                    a_media_url: '',
+                    fact_en: '',
+                    fact_ml: ''
+                }
+            ]
         };
     }
 
@@ -185,6 +258,7 @@
         if (!Array.isArray(quiz.teams)) quiz.teams = [];
         if (!Array.isArray(quiz.rounds)) quiz.rounds = [];
         if (!quiz.all_stage_questions) quiz.all_stage_questions = {};
+        if (!Array.isArray(quiz.prelims)) quiz.prelims = [];
 
         // Ensure questions in round are linked in all_stage_questions
         quiz.rounds.forEach((round, rIdx) => {
@@ -199,6 +273,17 @@
                 });
                 delete round.questions;
             }
+        });
+
+        // Normalize Prelims questions
+        quiz.prelims.forEach((p, idx) => {
+            p.num = p.num || (idx + 1);
+            p.serial_no = p.serial_no || (p.is_tiebreaker ? `TB${idx + 1}` : `P${String(idx + 1).padStart(2, '0')}`);
+            p.serial = p.serial_no;
+            p.question_en = p.question_en || p.prompt_en || '';
+            p.question_ml = p.question_ml || p.prompt_ml || '';
+            p.answer_en = p.answer_en || '';
+            p.answer_ml = p.answer_ml || '';
         });
     }
 
@@ -279,6 +364,45 @@
 
         elements.qMediaSrc.addEventListener('change', () => renderMediaPreview('q'));
         elements.aMediaSrc.addEventListener('change', () => renderMediaPreview('a'));
+
+        // Prelims Controls & Media Dropdowns
+        if (elements.btnAddPrelim) elements.btnAddPrelim.addEventListener('click', () => addPrelimQuestion(false));
+        if (elements.btnAddPrelimTB) elements.btnAddPrelimTB.addEventListener('click', () => addPrelimQuestion(true));
+        if (elements.btnDeletePrelim) elements.btnDeletePrelim.addEventListener('click', deleteCurrentPrelim);
+        if (elements.prelimIsTiebreaker) {
+            elements.prelimIsTiebreaker.addEventListener('change', () => {
+                saveCurrentPrelimFromForm();
+                renderPrelimsList();
+            });
+        }
+        if (elements.pQMediaType) {
+            elements.pQMediaType.addEventListener('change', () => {
+                updatePrelimMediaTypeVisibility('q');
+                saveCurrentPrelimFromForm();
+                renderPrelimMediaPreview('q');
+            });
+        }
+        if (elements.pAMediaType) {
+            elements.pAMediaType.addEventListener('change', () => {
+                updatePrelimMediaTypeVisibility('a');
+                saveCurrentPrelimFromForm();
+                renderPrelimMediaPreview('a');
+            });
+        }
+        const pLiveInputs = [
+            elements.pQTextEn, elements.pQTextMl, elements.pQMediaSrc, elements.pQMediaYtStart, elements.pQMediaYtEnd,
+            elements.pATextEn, elements.pATextMl, elements.pAMediaSrc, elements.pAMediaYtStart, elements.pAMediaYtEnd,
+            elements.pFactEn, elements.pFactMl
+        ];
+        pLiveInputs.forEach(input => {
+            if (input) {
+                input.addEventListener('input', () => {
+                    saveCurrentPrelimFromForm();
+                });
+            }
+        });
+        if (elements.pQMediaSrc) elements.pQMediaSrc.addEventListener('change', () => renderPrelimMediaPreview('q'));
+        if (elements.pAMediaSrc) elements.pAMediaSrc.addEventListener('change', () => renderPrelimMediaPreview('a'));
 
         // Theme live switcher & broadcast
         if (elements.metaTheme) {
@@ -373,6 +497,7 @@
         renderTeamsTab();
         renderRoundsTab();
         renderQuestionsTab();
+        renderPrelimsTab();
     }
 
     // --- TAB 1: METADATA & BRANDING ---
@@ -950,6 +1075,273 @@
         }
     }
 
+    // --- TAB 5: PRELIMS SCREENING STUDIO ---
+    function renderPrelimsTab() {
+        const prelims = currentQuiz.prelims || [];
+        const regularCount = prelims.filter(p => !p.is_tiebreaker).length;
+        const tbCount = prelims.filter(p => p.is_tiebreaker).length;
+
+        if (elements.prelimCountBadge) elements.prelimCountBadge.textContent = prelims.length;
+        if (elements.prelimTotalBadge) elements.prelimTotalBadge.textContent = `${prelims.length} Total`;
+        if (elements.prelimRegularCountDisplay) elements.prelimRegularCountDisplay.textContent = `${regularCount} Regular Qs`;
+        if (elements.prelimTBCountDisplay) elements.prelimTBCountDisplay.textContent = `${tbCount} Tie-Breakers`;
+
+        if (elements.prelimTimerDuration) {
+            elements.prelimTimerDuration.value = currentQuiz.prelimTimerDuration || 30;
+            elements.prelimTimerDuration.oninput = () => {
+                currentQuiz.prelimTimerDuration = parseInt(elements.prelimTimerDuration.value, 10) || 30;
+            };
+        }
+        if (elements.prelimAutoAdvanceDefault) {
+            elements.prelimAutoAdvanceDefault.checked = currentQuiz.prelimAutoAdvance !== false;
+            elements.prelimAutoAdvanceDefault.onchange = () => {
+                currentQuiz.prelimAutoAdvance = elements.prelimAutoAdvanceDefault.checked;
+            };
+        }
+
+        renderPrelimsList();
+    }
+
+    function renderPrelimsList() {
+        const prelims = currentQuiz.prelims || [];
+        if (!elements.prelimNavList) return;
+        elements.prelimNavList.innerHTML = '';
+
+        if (prelims.length === 0) {
+            elements.prelimNavList.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:0.5rem;">No prelim screening questions yet. Click "+ Add Prelim Q" to create one.</div>';
+            clearPrelimForm();
+            return;
+        }
+
+        if (selectedPrelimIndex >= prelims.length) {
+            selectedPrelimIndex = 0;
+        }
+
+        prelims.forEach((p, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `question-nav-item ${idx === selectedPrelimIndex ? 'active' : ''}`;
+            const isTB = Boolean(p.is_tiebreaker);
+            const serial = p.serial_no || (isTB ? `TB${idx + 1}` : `P${String(idx + 1).padStart(2, '0')}`);
+            const shortPrompt = (p.question_en || p.prompt_en || 'Empty question').substring(0, 32);
+            const hasMedia = (p.q_media_type && p.q_media_type !== 'none') || (p.a_media_type && p.a_media_type !== 'none') || p.image;
+
+            btn.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span style="font-weight:700; color:${isTB ? '#f59e0b' : '#34d399'};">${isTB ? '🚨 ' : ''}${serial}</span>
+                    ${hasMedia ? '<span style="font-size:0.7rem; opacity:0.8;">📷</span>' : ''}
+                </div>
+                <span style="opacity:0.75; font-size:0.75rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">${escapeHtml(shortPrompt)}...</span>
+            `;
+
+            btn.onclick = () => {
+                saveCurrentPrelimFromForm();
+                selectedPrelimIndex = idx;
+                renderPrelimsList();
+                loadPrelimIntoForm(idx);
+            };
+
+            elements.prelimNavList.appendChild(btn);
+        });
+
+        loadPrelimIntoForm(selectedPrelimIndex);
+    }
+
+    function loadPrelimIntoForm(idx) {
+        const p = (currentQuiz.prelims && currentQuiz.prelims[idx]) || null;
+        if (!p) {
+            clearPrelimForm();
+            return;
+        }
+
+        const isTB = Boolean(p.is_tiebreaker);
+        const serial = p.serial_no || (isTB ? `TB${idx + 1}` : `P${String(idx + 1).padStart(2, '0')}`);
+        if (elements.activePrelimSerialBadge) {
+            elements.activePrelimSerialBadge.textContent = serial;
+            elements.activePrelimSerialBadge.style.background = isTB ? '#d97706' : '#059669';
+        }
+        if (elements.activePrelimHeading) {
+            elements.activePrelimHeading.textContent = `Prelim: ${serial}`;
+        }
+
+        if (elements.prelimIsTiebreaker) elements.prelimIsTiebreaker.checked = isTB;
+        if (elements.pQTextEn) elements.pQTextEn.value = p.question_en || p.prompt_en || '';
+        if (elements.pQTextMl) elements.pQTextMl.value = p.question_ml || p.prompt_ml || '';
+
+        // Question Media
+        if (elements.pQMediaType) {
+            elements.pQMediaType.value = p.q_media_type || (p.image && p.has_visual ? 'image' : 'none');
+            elements.pQMediaSrc.value = p.q_media_url || (p.image && p.has_visual ? p.image : '') || '';
+            elements.pQMediaYtStart.value = p.q_media_yt_start || 0;
+            elements.pQMediaYtEnd.value = p.q_media_yt_end || 0;
+            updatePrelimMediaTypeVisibility('q');
+            renderPrelimMediaPreview('q');
+        }
+
+        // Answer
+        if (elements.pATextEn) elements.pATextEn.value = p.answer_en || '';
+        if (elements.pATextMl) elements.pATextMl.value = p.answer_ml || '';
+
+        // Answer Media
+        if (elements.pAMediaType) {
+            elements.pAMediaType.value = p.a_media_type || (p.image && !p.has_visual ? 'image' : 'none');
+            elements.pAMediaSrc.value = p.a_media_url || (p.image && !p.has_visual ? p.image : '') || '';
+            elements.pAMediaYtStart.value = p.a_media_yt_start || 0;
+            elements.pAMediaYtEnd.value = p.a_media_yt_end || 0;
+            updatePrelimMediaTypeVisibility('a');
+            renderPrelimMediaPreview('a');
+        }
+
+        if (elements.pFactEn) elements.pFactEn.value = p.fact_en || '';
+        if (elements.pFactMl) elements.pFactMl.value = p.fact_ml || '';
+    }
+
+    function saveCurrentPrelimFromForm() {
+        if (!currentQuiz.prelims || currentQuiz.prelims.length === 0) return;
+        const p = currentQuiz.prelims[selectedPrelimIndex];
+        if (!p) return;
+
+        if (elements.prelimIsTiebreaker) p.is_tiebreaker = elements.prelimIsTiebreaker.checked;
+        if (elements.pQTextEn) {
+            p.question_en = elements.pQTextEn.value;
+            p.prompt_en = p.question_en;
+        }
+        if (elements.pQTextMl) {
+            p.question_ml = elements.pQTextMl.value;
+            p.prompt_ml = p.question_ml;
+        }
+
+        if (elements.pQMediaType) {
+            p.q_media_type = elements.pQMediaType.value;
+            p.q_media_url = (elements.pQMediaSrc.value || '').trim();
+            p.q_media_yt_start = parseInt(elements.pQMediaYtStart.value, 10) || 0;
+            p.q_media_yt_end = parseInt(elements.pQMediaYtEnd.value, 10) || 0;
+        }
+
+        if (elements.pATextEn) p.answer_en = elements.pATextEn.value;
+        if (elements.pATextMl) p.answer_ml = elements.pATextMl.value;
+
+        if (elements.pAMediaType) {
+            p.a_media_type = elements.pAMediaType.value;
+            p.a_media_url = (elements.pAMediaSrc.value || '').trim();
+            p.a_media_yt_start = parseInt(elements.pAMediaYtStart.value, 10) || 0;
+            p.a_media_yt_end = parseInt(elements.pAMediaYtEnd.value, 10) || 0;
+        }
+
+        if (p.a_media_type === 'image' && p.a_media_url) {
+            p.image = p.a_media_url;
+            p.has_visual = false;
+        } else if (p.q_media_type === 'image' && p.q_media_url) {
+            p.image = p.q_media_url;
+            p.has_visual = true;
+        }
+
+        if (elements.pFactEn) p.fact_en = elements.pFactEn.value;
+        if (elements.pFactMl) p.fact_ml = elements.pFactMl.value;
+    }
+
+    function clearPrelimForm() {
+        if (elements.activePrelimSerialBadge) elements.activePrelimSerialBadge.textContent = 'None';
+        if (elements.activePrelimHeading) elements.activePrelimHeading.textContent = 'No Prelim Selected';
+        if (elements.prelimIsTiebreaker) elements.prelimIsTiebreaker.checked = false;
+        if (elements.pQTextEn) elements.pQTextEn.value = '';
+        if (elements.pQTextMl) elements.pQTextMl.value = '';
+        if (elements.pQMediaType) elements.pQMediaType.value = 'none';
+        if (elements.pQMediaSrc) elements.pQMediaSrc.value = '';
+        if (elements.pATextEn) elements.pATextEn.value = '';
+        if (elements.pATextMl) elements.pATextMl.value = '';
+        if (elements.pAMediaType) elements.pAMediaType.value = 'none';
+        if (elements.pAMediaSrc) elements.pAMediaSrc.value = '';
+        if (elements.pFactEn) elements.pFactEn.value = '';
+        if (elements.pFactMl) elements.pFactMl.value = '';
+        if (elements.pQMediaPreview) elements.pQMediaPreview.innerHTML = '<div class="media-preview-placeholder"><span>Question media preview</span></div>';
+        if (elements.pAMediaPreview) elements.pAMediaPreview.innerHTML = '<div class="media-preview-placeholder"><span>Answer media preview</span></div>';
+    }
+
+    function addPrelimQuestion(isTiebreaker = false) {
+        saveCurrentPrelimFromForm();
+        if (!Array.isArray(currentQuiz.prelims)) currentQuiz.prelims = [];
+
+        const existingCount = currentQuiz.prelims.length;
+        const num = existingCount + 1;
+        const serial = isTiebreaker 
+            ? `TB${currentQuiz.prelims.filter(p => p.is_tiebreaker).length + 1}`
+            : `P${String(currentQuiz.prelims.filter(p => !p.is_tiebreaker).length + 1).padStart(2, '0')}`;
+
+        const newPrelim = {
+            num: num,
+            serial_no: serial,
+            serial: serial,
+            is_tiebreaker: isTiebreaker,
+            question_en: `New Prelim Question #${num}`,
+            question_ml: '',
+            answer_en: 'Answer',
+            answer_ml: '',
+            q_media_type: 'none',
+            q_media_url: '',
+            a_media_type: 'none',
+            a_media_url: '',
+            fact_en: '',
+            fact_ml: ''
+        };
+
+        currentQuiz.prelims.push(newPrelim);
+        selectedPrelimIndex = currentQuiz.prelims.length - 1;
+        renderPrelimsTab();
+        showToast(`Added ${isTiebreaker ? 'Tie-Breaker' : 'Prelim'} question ${serial}!`);
+    }
+
+    function deleteCurrentPrelim() {
+        if (!currentQuiz.prelims || currentQuiz.prelims.length === 0) return;
+        const p = currentQuiz.prelims[selectedPrelimIndex];
+        if (!p) return;
+
+        if (confirm(`Delete Prelim question "${p.serial_no || p.num}"?`)) {
+            currentQuiz.prelims.splice(selectedPrelimIndex, 1);
+            selectedPrelimIndex = Math.max(0, selectedPrelimIndex - 1);
+            renderPrelimsTab();
+            showToast('Prelim question deleted.');
+        }
+    }
+
+    function updatePrelimMediaTypeVisibility(prefix) {
+        const typeEl = prefix === 'q' ? elements.pQMediaType : elements.pAMediaType;
+        const fieldsEl = prefix === 'q' ? elements.pQMediaFields : elements.pAMediaFields;
+        if (!typeEl || !fieldsEl) return;
+        const isNone = typeEl.value === 'none';
+        fieldsEl.style.display = isNone ? 'none' : 'block';
+
+        const isYT = typeEl.value === 'youtube';
+        const ytFields = document.querySelectorAll(prefix === 'q' ? '.p-q-yt-only' : '.p-a-yt-only');
+        ytFields.forEach(f => f.style.display = isYT ? 'flex' : 'none');
+    }
+
+    function renderPrelimMediaPreview(prefix) {
+        const typeEl = prefix === 'q' ? elements.pQMediaType : elements.pAMediaType;
+        const srcEl = prefix === 'q' ? elements.pQMediaSrc : elements.pAMediaSrc;
+        const previewEl = prefix === 'q' ? elements.pQMediaPreview : elements.pAMediaPreview;
+        const startEl = prefix === 'q' ? elements.pQMediaYtStart : elements.pAMediaYtStart;
+        const endEl = prefix === 'q' ? elements.pQMediaYtEnd : elements.pAMediaYtEnd;
+        if (!typeEl || !srcEl || !previewEl) return;
+
+        const mediaType = typeEl.value;
+        const mediaSrc = srcEl.value.trim();
+
+        if (mediaType === 'none' || !mediaSrc) {
+            previewEl.innerHTML = `<div class="media-preview-placeholder"><span>${prefix === 'q' ? 'Question' : 'Answer'} preview will appear here</span></div>`;
+            return;
+        }
+
+        if (window.MediaPlayer) {
+            window.MediaPlayer.render(previewEl, {
+                type: mediaType,
+                src: mediaSrc,
+                start: parseInt(startEl ? startEl.value : 0, 10) || 0,
+                end: parseInt(endEl ? endEl.value : 0, 10) || 0
+            }, { isQMView: true });
+        }
+    }
+
     // --- PRESETS & PERSISTENCE ---
     function loadPreset(presetKey) {
         if (presetKey === 'sample_multimedia' && typeof PRESET_SAMPLE_MULTIMEDIA !== 'undefined') {
@@ -966,12 +1358,14 @@
         normalizeQuizStructure(currentQuiz);
         selectedRoundIndex = 0;
         selectedQuestionId = null;
+        selectedPrelimIndex = 0;
         renderAll();
         showToast('Preset loaded successfully! Click "Save & Apply" to deploy.');
     }
 
     function exportJson() {
         saveCurrentQuestionFromForm();
+        saveCurrentPrelimFromForm();
         const jsonStr = JSON.stringify(currentQuiz, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -1029,6 +1423,24 @@
             });
         });
 
+        // Export Prelims questions too
+        (currentQuiz.prelims || []).forEach(p => {
+            const row = [
+                p.serial_no || (p.is_tiebreaker ? `TB${p.num}` : `P${p.num}`),
+                p.is_tiebreaker ? 'Prelims Tie-Breaker' : 'Written Prelims',
+                cleanCsvCell(p.question_en || ''),
+                cleanCsvCell(p.question_ml || ''),
+                cleanCsvCell(p.answer_en || ''),
+                cleanCsvCell(p.answer_ml || ''),
+                p.q_media_type || 'none',
+                cleanCsvCell(p.q_media_url || ''),
+                p.a_media_type || 'none',
+                cleanCsvCell(p.a_media_url || ''),
+                cleanCsvCell(p.fact_en || '')
+            ];
+            csv += row.join(',') + '\n';
+        });
+
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1045,6 +1457,7 @@
 
     function saveAndApply() {
         saveCurrentQuestionFromForm();
+        saveCurrentPrelimFromForm();
 
         // 1. Save to localStorage
         try {
