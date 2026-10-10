@@ -26,8 +26,9 @@
                 <option value="clean_blank">🧹 Clean Blank Quiz (Start from Scratch)</option>
             </select>
 
-            <button type="button" class="btn" id="btnImportJson" title="Import from JSON">📥 Import JSON</button>
-            <input type="file" id="fileImportJson" accept=".json" style="display:none;">
+            <button type="button" class="btn" id="btnExportZip" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-weight: 700;" title="Export complete quiz including all media files as a portable ZIP for PC2">📦 Export ZIP</button>
+            <button type="button" class="btn" id="btnImportZip" title="Import portable quiz package ZIP or JSON from another PC">📥 Import ZIP</button>
+            <input type="file" id="fileImportZip" accept=".zip,.json" style="display:none;">
 
             <button type="button" class="btn" id="btnExportJson" title="Export complete quiz as JSON">💾 Export JSON</button>
             <button type="button" class="btn" id="btnExportCsv" title="Export questions as CSV">📊 Export CSV</button>
@@ -166,6 +167,33 @@
                     <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Quick Presets:</span>
                     <button type="button" class="btn btn-sm btn-primary" id="btnPresetGvcLogos">🌿 Apply Victoria College & Botany Logos</button>
                     <button type="button" class="btn btn-sm btn-danger" id="btnClearAllLogos">✕ Clear Both Logos</button>
+                </div>
+            </div>
+
+            <!-- CARD 3: PORTABLE QUIZ BUNDLE (PC1 ➔ PC2 TRANSFER) -->
+            <div class="studio-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(6, 78, 59, 0.25), rgba(15, 23, 42, 0.55)); border: 1.5px solid #10B981;">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title" style="color: #6EE7B7;">📦 Portable Quiz Bundle (.zip) — Offline & PC-to-PC Transfer</h2>
+                        <p style="font-size: 0.85rem; color: #CBD5E1; margin-top: 0.25rem; line-height: 1.45;">
+                            Package all quiz questions, rounds, teams, branding logos, and <strong>every local media file</strong> (photos, audio clips, videos) into a single standalone ZIP archive. Transport this ZIP to <strong>PC2</strong> and click Import to restore the complete offline experience.
+                        </p>
+                    </div>
+                    <span class="badge badge-emerald" id="bundleMediaCountBadge" style="font-size: 0.82rem; padding: 5px 12px; font-weight: 800;">
+                        Media Ready
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+                    <button type="button" class="btn btn-primary" id="btnExportZipCard" style="background: linear-gradient(135deg, #059669, #10b981); color: #FFF; font-weight: 800; padding: 10px 20px; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;">
+                        📦 Export Complete Quiz ZIP (with Media)
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnImportZipCard" style="background: rgba(59, 130, 246, 0.25); border: 1.5px solid #3B82F6; color: #93C5FD; font-weight: 800; padding: 10px 20px; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 8px;">
+                        📥 Import Complete Quiz ZIP (from PC1)
+                    </button>
+                    <span style="font-size: 0.8rem; color: #94A3B8; margin-left: auto;">
+                        💡 Runs offline on PC2 via <code>run_app.bat</code> or <code>python server.py</code>
+                    </span>
                 </div>
             </div>
         </section>

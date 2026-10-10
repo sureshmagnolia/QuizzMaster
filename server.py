@@ -123,6 +123,8 @@ def save_question_to_disk(base_dir, qid, updates):
 
     return {'success': True, 'message': f'Question #{qid} successfully saved permanently to disk!'}
 
+from quiz_bundle import export_quiz_bundle, import_quiz_bundle
+
 class ThreadingServer(socketserver.ThreadingTCPServer):
     allow_reuse_address = True
     daemon_threads = True
@@ -149,6 +151,40 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_cors_headers()
         self.end_headers()
+
+    def do_GET(self):
+        if self.path == '/api/export_quiz_zip' or self.path.startswith('/api/export_quiz_zip?'):
+            try:
+                quiz_path = os.path.join(DIRECTORY, 'presets', 'active_quiz.json')
+                if not os.path.exists(quiz_path):
+                    quiz_path = os.path.join(DIRECTORY, 'presets', 'sahyadri_wildlife_2026.json')
+                with open(quiz_path, 'r', encoding='utf-8') as f:
+                    quiz_data = json.load(f)
+
+                zip_bytes, media_count, packaged = export_quiz_bundle(DIRECTORY, quiz_data)
+                title = quiz_data.get('meta', {}).get('title', 'quiz').lower()
+                safe_name = re.sub(r'[^a-z0-9]+', '_', title).strip('_') or 'quizzmaster'
+                ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"QuizzMaster_{safe_name}_{ts}.zip"
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/zip')
+                self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+                self.send_header('Content-Length', str(len(zip_bytes)))
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(zip_bytes)
+                print(f"[SERVER] Exported active quiz bundle '{filename}' ({len(zip_bytes)} bytes, {media_count} media files)")
+                return
+            except Exception as e:
+                print(f"[SERVER ERROR] /api/export_quiz_zip (GET): {e}")
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode('utf-8'))
+                return
+        super().do_GET()
 
     def do_POST(self):
         if self.path == '/api/save_question':
@@ -270,6 +306,86 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 print(f"[SERVER] Uploaded image {relative_path} for question #{qid}")
             except Exception as e:
                 print(f"[SERVER ERROR] /api/upload_image: {e}")
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode('utf-8'))
+
+        elif self.path == '/api/export_quiz_zip':
+            try:
+                content_len = int(self.headers.get('Content-Length', self.headers.get('content-length', 0)))
+                post_body = self.rfile.read(content_len).decode('utf-8', errors='replace') if content_len > 0 else '{}'
+                quiz_data = json.loads(post_body) if post_body.strip() else {}
+                if not quiz_data:
+                    quiz_path = os.path.join(DIRECTORY, 'presets', 'active_quiz.json')
+                    if not os.path.exists(quiz_path):
+                        quiz_path = os.path.join(DIRECTORY, 'presets', 'sahyadri_wildlife_2026.json')
+                    with open(quiz_path, 'r', encoding='utf-8') as f:
+                        quiz_data = json.load(f)
+
+                zip_bytes, media_count, packaged = export_quiz_bundle(DIRECTORY, quiz_data)
+                title = quiz_data.get('meta', {}).get('title', 'quiz').lower()
+                safe_name = re.sub(r'[^a-z0-9]+', '_', title).strip('_') or 'quizzmaster'
+                ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"QuizzMaster_{safe_name}_{ts}.zip"
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/zip')
+                self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+                self.send_header('Content-Length', str(len(zip_bytes)))
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(zip_bytes)
+                print(f"[SERVER] Exported in-memory quiz bundle '{filename}' ({len(zip_bytes)} bytes, {media_count} media files)")
+            except Exception as e:
+                print(f"[SERVER ERROR] /api/export_quiz_zip (POST): {e}")
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode('utf-8'))
+
+        elif self.path == '/api/import_quiz_zip':
+            try:
+                content_len = int(self.headers.get('Content-Length', self.headers.get('content-length', 0)))
+                content_type = self.headers.get('Content-Type', self.headers.get('content-type', ''))
+                raw_body = self.rfile.read(content_len) if content_len > 0 else b''
+                zip_bytes = None
+
+                if 'application/json' in content_type:
+                    payload = json.loads(raw_body.decode('utf-8', errors='replace'))
+                    b64_data = payload.get('zip_base64', '')
+                    if ',' in b64_data:
+                        b64_data = b64_data.split(',', 1)[1]
+                    zip_bytes = base64.b64decode(b64_data)
+                elif 'multipart/form-data' in content_type:
+                    boundary = content_type.split('boundary=')[-1].strip().encode('latin1')
+                    parts = raw_body.split(b'--' + boundary)
+                    for part in parts:
+                        if b'filename=' in part and b'\r\n\r\n' in part:
+                            header, data = part.split(b'\r\n\r\n', 1)
+                            if data.endswith(b'\r\n'):
+                                data = data[:-2]
+                            zip_bytes = data
+                            break
+                    if not zip_bytes:
+                        zip_bytes = raw_body
+                else:
+                    zip_bytes = raw_body
+
+                if not zip_bytes:
+                    raise ValueError("No zip data received in request.")
+
+                result = import_quiz_bundle(DIRECTORY, zip_bytes)
+                self.send_response(200 if result.get('success') else 400)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+                print(f"[SERVER] /api/import_quiz_zip: {result.get('success')}, {result.get('message')}")
+            except Exception as e:
+                print(f"[SERVER ERROR] /api/import_quiz_zip: {e}")
                 self.send_response(500)
                 self.send_header('Content-Type', 'application/json')
                 self.send_cors_headers()

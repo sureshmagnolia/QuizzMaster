@@ -42,7 +42,7 @@
             </div>
 
             <!-- Theme & Global Actions -->
-            <div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+            <div class="qm-header-tools" style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
                 <div class="qm-theme-pill">
                     <span style="font-size: 0.9rem;" title="UI Color Theme">🎨</span>
                     <label for="qmThemeSelect" style="font-size: 0.74rem; font-weight: 800; color: var(--text-gold); text-transform: uppercase;">Theme:</label>
@@ -62,6 +62,13 @@
                 <button class="btn-primary" onclick="openPublicWindow()" style="padding: 5px 12px; font-size: 0.78rem; white-space: nowrap;">
                     🖥️ Public Display
                 </button>
+                <button class="btn-primary" id="btnQmExportZip" onclick="exportQuizZipBundle()" style="background: linear-gradient(135deg, #059669, #10B981); color: #FFF; padding: 5px 11px; font-size: 0.78rem; white-space: nowrap; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4);" title="Export entire quiz data + all media files as a portable ZIP for transfer to PC2">
+                    📦 Export ZIP
+                </button>
+                <button class="btn-primary" id="btnQmImportZip" onclick="document.getElementById('fileQmImportZip').click()" style="background: rgba(30, 41, 59, 0.9); border: 1px solid #38BDF8; color: #38BDF8; padding: 5px 11px; font-size: 0.78rem; white-space: nowrap; font-weight: 700;" title="Import portable ZIP bundle or JSON from PC1 onto this PC">
+                    📥 Import ZIP
+                </button>
+                <input type="file" id="fileQmImportZip" accept=".zip,.json" style="display: none;" onchange="handleQMZipOrJsonImport(event)">
                 <a href="builder.html" target="_blank" class="btn-primary" style="background: #8B5CF6; color: #FFF; padding: 5px 12px; font-size: 0.78rem; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Open Visual Quiz Studio / Question Builder">
                     🛠️ Quiz Studio
                 </a>

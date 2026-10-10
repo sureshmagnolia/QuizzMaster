@@ -30,6 +30,13 @@
         elements.btnExportCsv = document.getElementById('btnExportCsv');
         elements.btnSaveApply = document.getElementById('btnSaveApply');
 
+        elements.btnExportZip = document.getElementById('btnExportZip');
+        elements.btnImportZip = document.getElementById('btnImportZip');
+        elements.fileImportZip = document.getElementById('fileImportZip');
+        elements.btnExportZipCard = document.getElementById('btnExportZipCard');
+        elements.btnImportZipCard = document.getElementById('btnImportZipCard');
+        elements.bundleMediaCountBadge = document.getElementById('bundleMediaCountBadge');
+
         elements.tabs = document.querySelectorAll('.tab-btn');
         elements.panes = document.querySelectorAll('.tab-pane');
 
@@ -311,8 +318,15 @@
 
         // Import / Export JSON
         elements.btnExportJson.addEventListener('click', exportJson);
-        elements.btnImportJson.addEventListener('click', () => elements.fileImportJson.click());
-        elements.fileImportJson.addEventListener('change', handleFileImport);
+        if (elements.btnImportJson) elements.btnImportJson.addEventListener('click', () => elements.fileImportJson.click());
+        if (elements.fileImportJson) elements.fileImportJson.addEventListener('change', handleFileImport);
+
+        // Export & Import Portable ZIP Package (with all Media)
+        if (elements.btnExportZip) elements.btnExportZip.addEventListener('click', exportZipBundle);
+        if (elements.btnExportZipCard) elements.btnExportZipCard.addEventListener('click', exportZipBundle);
+        if (elements.btnImportZip) elements.btnImportZip.addEventListener('click', () => elements.fileImportZip.click());
+        if (elements.btnImportZipCard) elements.btnImportZipCard.addEventListener('click', () => elements.fileImportZip.click());
+        if (elements.fileImportZip) elements.fileImportZip.addEventListener('change', handleZipOrJsonImport);
 
         // Export CSV
         elements.btnExportCsv.addEventListener('click', exportCsv);
@@ -539,6 +553,8 @@
                 if (elements.metaDepartment) currentQuiz.meta.department = elements.metaDepartment.value;
             };
         });
+
+        updateMediaCountBadge();
     }
 
     function handleLogoFileSelect(e, type) {
@@ -1396,6 +1412,137 @@
             }
         };
         reader.readAsText(file);
+        e.target.value = '';
+    }
+
+    // --- PORTABLE ZIP BUNDLE (OFFLINE & PC-TO-PC TRANSFER) ---
+    function getReferencedMediaStats(quiz) {
+        quiz = quiz || currentQuiz;
+        if (!quiz) return { count: 0, files: [] };
+        const files = new Set();
+        const m = quiz.meta || {};
+        if (m.logo_primary && !m.logo_primary.startsWith('http://') && !m.logo_primary.startsWith('https://')) files.add(m.logo_primary);
+        if (m.logo_secondary && !m.logo_secondary.startsWith('http://') && !m.logo_secondary.startsWith('https://')) files.add(m.logo_secondary);
+
+        Object.values(quiz.all_stage_questions || {}).forEach(q => {
+            if (q.q_media_url && !q.q_media_url.startsWith('http://') && !q.q_media_url.startsWith('https://')) files.add(q.q_media_url);
+            if (q.a_media_url && !q.a_media_url.startsWith('http://') && !q.a_media_url.startsWith('https://')) files.add(q.a_media_url);
+        });
+
+        (quiz.prelims || []).forEach(p => {
+            if (p.q_media_url && !p.q_media_url.startsWith('http://') && !p.q_media_url.startsWith('https://')) files.add(p.q_media_url);
+            if (p.a_media_url && !p.a_media_url.startsWith('http://') && !p.a_media_url.startsWith('https://')) files.add(p.a_media_url);
+        });
+
+        return {
+            count: files.size,
+            files: Array.from(files)
+        };
+    }
+
+    function updateMediaCountBadge() {
+        if (!elements.bundleMediaCountBadge) return;
+        const stats = getReferencedMediaStats(currentQuiz);
+        elements.bundleMediaCountBadge.textContent = `📦 ${stats.count} Media File${stats.count === 1 ? '' : 's'} Linked`;
+    }
+
+    async function exportZipBundle() {
+        saveCurrentQuestionFromForm();
+        saveCurrentPrelimFromForm();
+
+        const stats = getReferencedMediaStats(currentQuiz);
+        showToast(`⏳ Bundling ${stats.count} media file(s) into portable ZIP...`);
+
+        try {
+            const resp = await fetch('/api/export_quiz_zip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentQuiz)
+            });
+
+            if (!resp.ok) {
+                throw new Error(`Server returned HTTP ${resp.status}`);
+            }
+
+            const blob = await resp.blob();
+            let filename = `QuizzMaster_${(currentQuiz.meta?.title || 'quiz').toLowerCase().replace(/[^a-z0-9]+/g, '_')}_package.zip`;
+            const cdHeader = resp.headers.get('Content-Disposition');
+            if (cdHeader && cdHeader.includes('filename=')) {
+                const match = cdHeader.match(/filename="?([^"]+)"?/);
+                if (match && match[1]) filename = match[1];
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            const mb = (blob.size / (1024 * 1024)).toFixed(2);
+            showToast(`✅ Portable ZIP exported (${mb} MB, ${stats.count} media files)! Transfer this file to PC2.`);
+        } catch (err) {
+            console.error('Export ZIP error:', err);
+            alert('Failed to generate ZIP package from local server: ' + err.message + '\n\nMake sure server.py is running on PC1!');
+        }
+    }
+
+    async function handleZipOrJsonImport(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const isZip = file.name.toLowerCase().endsWith('.zip') || (file.type && file.type.includes('zip'));
+
+        if (isZip) {
+            showToast(`⏳ Unpacking ${file.name} and extracting media assets onto this PC...`);
+            try {
+                const resp = await fetch('/api/import_quiz_zip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/zip'
+                    },
+                    body: file
+                });
+
+                const result = await resp.json();
+                if (!resp.ok || !result.success) {
+                    throw new Error(result.error || result.message || 'Import failed');
+                }
+
+                const importedQuiz = result.quiz || result.quiz_data;
+                if (importedQuiz) {
+                    normalizeQuizStructure(importedQuiz);
+                    currentQuiz = importedQuiz;
+                }
+
+                // Persist & synchronize
+                try {
+                    localStorage.setItem('QUIZZMASTER_ACTIVE_PACKAGE', JSON.stringify(currentQuiz));
+                } catch (e) {}
+
+                window.QUIZ_DATA = currentQuiz;
+                if (stateManager && typeof stateManager.updateQuizPackage === 'function') {
+                    stateManager.updateQuizPackage(currentQuiz);
+                }
+
+                selectedRoundIndex = 0;
+                selectedQuestionId = null;
+                selectedPrelimIndex = 0;
+                renderAll();
+
+                const extractedCount = result.media_count !== undefined ? result.media_count : ((result.files_extracted && result.files_extracted.length) || 0);
+                showToast(`🎉 ZIP imported! Extracted ${extractedCount} media files & activated quiz.`);
+                alert(`🎉 Quiz imported successfully!\n\n• Quiz: ${currentQuiz.meta?.title || 'Quiz'}\n• Unpacked: ${extractedCount} media files\n• Active on: This PC (${window.location.origin})`);
+            } catch (err) {
+                console.error('Import ZIP error:', err);
+                alert('Failed to import ZIP bundle: ' + err.message + '\n\nEnsure server.py is running on this PC!');
+            }
+        } else {
+            // JSON fallback
+            handleFileImport(e);
+        }
         e.target.value = '';
     }
 

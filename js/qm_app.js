@@ -2532,6 +2532,121 @@ function setClueStage(stage) {
     });
     setTimerDuration(15);
     startTimer();
-    showQMNotification('⏱️ <b>Clue ' + targetStage + ' Active:</b> 15s Timer Started!', 'info');
 }
 window.setClueStage = setClueStage;
+
+// --- PORTABLE QUIZ BUNDLE (OFFLINE & PC-TO-PC TRANSFER) FOR QM COCKPIT ---
+async function exportQuizZipBundle() {
+    const quizData = window.QUIZ_DATA || {};
+    const title = quizData.meta?.title || 'quiz';
+    console.log('[QM] Exporting ZIP bundle for active quiz:', title);
+    
+    const btn = document.getElementById('btnQmExportZip');
+    const origText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳ Zipping...';
+
+    try {
+        const resp = await fetch('/api/export_quiz_zip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(quizData)
+        });
+
+        if (!resp.ok) {
+            throw new Error(`Server returned HTTP ${resp.status}`);
+        }
+
+        const blob = await resp.blob();
+        let filename = `QuizzMaster_${title.toLowerCase().replace(/[^a-z0-9]+/g, '_')}_package.zip`;
+        const cdHeader = resp.headers.get('Content-Disposition');
+        if (cdHeader && cdHeader.includes('filename=')) {
+            const match = cdHeader.match(/filename="?([^"]+)"?/);
+            if (match && match[1]) filename = match[1];
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        const mb = (blob.size / (1024 * 1024)).toFixed(2);
+        alert(`📦 Portable ZIP Exported Successfully!\n\n• File: ${filename}\n• Size: ${mb} MB\n\nTransfer this file via pendrive/network to PC2 and click "📥 Import ZIP" on PC2.`);
+    } catch (err) {
+        console.error('[QM] Export ZIP error:', err);
+        alert('Failed to generate ZIP package: ' + err.message + '\n\nMake sure server.py is running on PC1!');
+    } finally {
+        if (btn) btn.textContent = origText || '📦 Export ZIP';
+    }
+}
+window.exportQuizZipBundle = exportQuizZipBundle;
+
+async function handleQMZipOrJsonImport(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const isZip = file.name.toLowerCase().endsWith('.zip') || (file.type && file.type.includes('zip'));
+    const btn = document.getElementById('btnQmImportZip');
+    const origText = btn ? btn.textContent : '';
+
+    if (isZip) {
+        if (btn) btn.textContent = '⏳ Unpacking...';
+        try {
+            const resp = await fetch('/api/import_quiz_zip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/zip' },
+                body: file
+            });
+
+            const result = await resp.json();
+            if (!resp.ok || !result.success) {
+                throw new Error(result.error || result.message || 'Import failed');
+            }
+
+            const importedQuiz = result.quiz_data || null;
+            if (importedQuiz) {
+                window.QUIZ_DATA = importedQuiz;
+                try {
+                    localStorage.setItem('QUIZZMASTER_ACTIVE_PACKAGE', JSON.stringify(importedQuiz));
+                } catch (err) {}
+
+                if (window.QuizState && typeof window.QuizState.updateQuizPackage === 'function') {
+                    window.QuizState.updateQuizPackage(importedQuiz);
+                }
+            }
+
+            const extractedCount = (result.files_extracted && result.files_extracted.length) || 0;
+            alert(`🎉 Quiz Imported Successfully on this PC!\n\n• Quiz: ${importedQuiz?.meta?.title || 'Imported Quiz'}\n• Unpacked: ${extractedCount} media files\n• Active on: This PC\n\nAll media assets and question configurations are now active! Reloading page to apply clean layout...`);
+            window.location.reload();
+        } catch (err) {
+            console.error('[QM] Import ZIP error:', err);
+            alert('Failed to import ZIP bundle: ' + err.message + '\n\nEnsure server.py is running on this PC!');
+        } finally {
+            if (btn) btn.textContent = origText || '📥 Import ZIP';
+        }
+    } else {
+        // Fallback for .json files
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const parsed = JSON.parse(event.target.result);
+                window.QUIZ_DATA = parsed;
+                localStorage.setItem('QUIZZMASTER_ACTIVE_PACKAGE', JSON.stringify(parsed));
+                if (window.QuizState && typeof window.QuizState.updateQuizPackage === 'function') {
+                    window.QuizState.updateQuizPackage(parsed);
+                }
+                alert('Quiz JSON loaded! Reloading...');
+                window.location.reload();
+            } catch (err) {
+                alert('Invalid JSON file: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+    e.target.value = '';
+}
+window.handleQMZipOrJsonImport = handleQMZipOrJsonImport;
+
