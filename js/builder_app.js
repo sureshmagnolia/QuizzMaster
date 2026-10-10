@@ -1446,6 +1446,151 @@
         elements.bundleMediaCountBadge.textContent = `📦 ${stats.count} Media File${stats.count === 1 ? '' : 's'} Linked`;
     }
 
+    async function exportWithClientJSZip(quiz) {
+        if (typeof JSZip === 'undefined') {
+            throw new Error('JSZip library is not loaded');
+        }
+        const zip = new JSZip();
+        const packagedQuiz = JSON.parse(JSON.stringify(quiz));
+        const processedMap = new Map();
+
+        async function processMedia(url, prefix) {
+            if (!url || typeof url !== 'string') return url;
+            const clean = url.trim();
+            if (!clean || clean === 'none' || clean.startsWith('http://') || clean.startsWith('https://')) {
+                return url;
+            }
+            if (processedMap.has(clean)) {
+                return processedMap.get(clean);
+            }
+            if (clean.startsWith('data:')) {
+                const match = clean.match(/^data:([^;]+);base64,(.+)$/);
+                if (match) {
+                    const mime = match[1];
+                    const b64 = match[2];
+                    let ext = '.png';
+                    if (mime.includes('jpeg') || mime.includes('jpg')) ext = '.jpg';
+                    else if (mime.includes('gif')) ext = '.gif';
+                    else if (mime.includes('webp')) ext = '.webp';
+                    else if (mime.includes('mp3')) ext = '.mp3';
+                    const filename = `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}${ext}`;
+                    zip.folder("media/extracted").file(filename, b64, { base64: true });
+                    const zipPath = `media/extracted/${filename}`;
+                    processedMap.set(clean, zipPath);
+                    return zipPath;
+                }
+                return clean;
+            }
+            try {
+                const resp = await fetch(clean);
+                if (resp.ok) {
+                    const blob = await resp.blob();
+                    const fname = clean.split('/').pop().split('\\').pop() || 'media_asset';
+                    let subfolder = 'images';
+                    if (fname.match(/\.(mp3|wav|ogg|m4a)$/i)) subfolder = 'audio';
+                    else if (clean.includes('branding') || prefix.includes('logo')) subfolder = 'branding';
+                    zip.folder(`media/${subfolder}`).file(fname, blob);
+                    const zipPath = `media/${subfolder}/${fname}`;
+                    processedMap.set(clean, zipPath);
+                    return zipPath;
+                }
+            } catch (err) {
+                console.warn('[JSZip] Could not fetch local asset:', clean, err);
+            }
+            return clean;
+        }
+
+        if (packagedQuiz.meta) {
+            if (packagedQuiz.meta.logo_primary) packagedQuiz.meta.logo_primary = await processMedia(packagedQuiz.meta.logo_primary, 'logo1');
+            if (packagedQuiz.meta.logo_secondary) packagedQuiz.meta.logo_secondary = await processMedia(packagedQuiz.meta.logo_secondary, 'logo2');
+        }
+        for (const qid in (packagedQuiz.all_stage_questions || {})) {
+            const q = packagedQuiz.all_stage_questions[qid];
+            if (q.q_media_url) q.q_media_url = await processMedia(q.q_media_url, `q_${qid}`);
+            if (q.a_media_url) q.a_media_url = await processMedia(q.a_media_url, `a_${qid}`);
+        }
+        for (const p of (packagedQuiz.prelims || [])) {
+            if (p.q_media_url) p.q_media_url = await processMedia(p.q_media_url, `pq_${p.num}`);
+            if (p.a_media_url) p.a_media_url = await processMedia(p.a_media_url, `pa_${p.num}`);
+        }
+
+        zip.file("quiz.json", JSON.stringify(packagedQuiz, null, 2));
+        zip.file("README.txt", `QuizzMaster Portable Quiz Package\nTitle: ${packagedQuiz.meta?.title || 'Quiz'}\nExported: ${new Date().toLocaleString()}\n\nCompatible with both local server and GitHub Pages!\nTo import on PC2, simply open Cockpit or Studio and click 'Import ZIP'.`);
+
+        return await zip.generateAsync({ type: "blob" });
+    }
+
+    async function importWithClientJSZip(file) {
+        if (typeof JSZip === 'undefined') {
+            throw new Error('JSZip library is not loaded');
+        }
+        const zip = await JSZip.loadAsync(file);
+        let quizFile = zip.file("quiz.json") || zip.file("active_quiz.json");
+        if (!quizFile) {
+            const rootJson = Object.keys(zip.files).find(name => !name.includes('/') && name.endsWith('.json'));
+            if (rootJson) quizFile = zip.file(rootJson);
+        }
+        if (!quizFile) {
+            throw new Error("No quiz.json manifest found in the ZIP archive.");
+        }
+
+        const quizText = await quizFile.async("string");
+        const quizData = JSON.parse(quizText);
+
+        const mediaMap = {};
+        const mediaEntries = Object.keys(zip.files).filter(name => !zip.files[name].dir && (name.startsWith('media/') || name.startsWith('assets/')));
+
+        for (const path of mediaEntries) {
+            const entry = zip.file(path);
+            if (!entry) continue;
+
+            let mime = 'image/jpeg';
+            const lower = path.toLowerCase();
+            if (lower.endsWith('.png')) mime = 'image/png';
+            else if (lower.endsWith('.webp')) mime = 'image/webp';
+            else if (lower.endsWith('.gif')) mime = 'image/gif';
+            else if (lower.endsWith('.svg')) mime = 'image/svg+xml';
+            else if (lower.endsWith('.mp3')) mime = 'audio/mpeg';
+            else if (lower.endsWith('.wav')) mime = 'audio/wav';
+            else if (lower.endsWith('.ogg')) mime = 'audio/ogg';
+            else if (lower.endsWith('.mp4')) mime = 'video/mp4';
+
+            const b64 = await entry.async("base64");
+            const dataUrl = `data:${mime};base64,${b64}`;
+            mediaMap[path] = dataUrl;
+            const fname = path.split('/').pop().split('\\').pop();
+            mediaMap[fname] = dataUrl;
+        }
+
+        function resolve(url) {
+            if (!url || typeof url !== 'string') return url;
+            const t = url.trim();
+            if (mediaMap[t]) return mediaMap[t];
+            const fname = t.split('/').pop().split('\\').pop();
+            if (mediaMap[fname]) return mediaMap[fname];
+            return t;
+        }
+
+        if (quizData.meta) {
+            if (quizData.meta.logo_primary) quizData.meta.logo_primary = resolve(quizData.meta.logo_primary);
+            if (quizData.meta.logo_secondary) quizData.meta.logo_secondary = resolve(quizData.meta.logo_secondary);
+        }
+        for (const qid in (quizData.all_stage_questions || {})) {
+            const q = quizData.all_stage_questions[qid];
+            if (q.q_media_url) q.q_media_url = resolve(q.q_media_url);
+            if (q.a_media_url) q.a_media_url = resolve(q.a_media_url);
+        }
+        for (const p of (quizData.prelims || [])) {
+            if (p.q_media_url) p.q_media_url = resolve(p.q_media_url);
+            if (p.a_media_url) p.a_media_url = resolve(p.a_media_url);
+        }
+
+        return {
+            quiz: quizData,
+            media_count: mediaEntries.length
+        };
+    }
+
     async function exportZipBundle() {
         saveCurrentQuestionFromForm();
         saveCurrentPrelimFromForm();
@@ -1453,6 +1598,10 @@
         const stats = getReferencedMediaStats(currentQuiz);
         showToast(`⏳ Bundling ${stats.count} media file(s) into portable ZIP...`);
 
+        let blob = null;
+        let filename = `QuizzMaster_${(currentQuiz.meta?.title || 'quiz').toLowerCase().replace(/[^a-z0-9]+/g, '_')}_package.zip`;
+
+        // 1. Try local server first
         try {
             const resp = await fetch('/api/export_quiz_zip', {
                 method: 'POST',
@@ -1460,33 +1609,41 @@
                 body: JSON.stringify(currentQuiz)
             });
 
-            if (!resp.ok) {
-                throw new Error(`Server returned HTTP ${resp.status}`);
+            if (resp.ok) {
+                blob = await resp.blob();
+                const cdHeader = resp.headers.get('Content-Disposition');
+                if (cdHeader && cdHeader.includes('filename=')) {
+                    const match = cdHeader.match(/filename="?([^"]+)"?/);
+                    if (match && match[1]) filename = match[1];
+                }
             }
-
-            const blob = await resp.blob();
-            let filename = `QuizzMaster_${(currentQuiz.meta?.title || 'quiz').toLowerCase().replace(/[^a-z0-9]+/g, '_')}_package.zip`;
-            const cdHeader = resp.headers.get('Content-Disposition');
-            if (cdHeader && cdHeader.includes('filename=')) {
-                const match = cdHeader.match(/filename="?([^"]+)"?/);
-                if (match && match[1]) filename = match[1];
-            }
-
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            const mb = (blob.size / (1024 * 1024)).toFixed(2);
-            showToast(`✅ Portable ZIP exported (${mb} MB, ${stats.count} media files)! Transfer this file to PC2.`);
-        } catch (err) {
-            console.error('Export ZIP error:', err);
-            alert('Failed to generate ZIP package from local server: ' + err.message + '\n\nMake sure server.py is running on PC1!');
+        } catch (serverErr) {
+            console.log('[Export ZIP] Local server unavailable, using client-side JSZip engine.');
         }
+
+        // 2. Fallback to client-side JSZip (for GitHub Pages / Static Hosting)
+        if (!blob) {
+            try {
+                showToast(`⏳ Generating ZIP directly in browser via JSZip...`);
+                blob = await exportWithClientJSZip(currentQuiz);
+            } catch (jsZipErr) {
+                console.error('[Export ZIP] JSZip client fallback error:', jsZipErr);
+                alert('Failed to generate ZIP package: ' + jsZipErr.message);
+                return;
+            }
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        const mb = (blob.size / (1024 * 1024)).toFixed(2);
+        showToast(`✅ Portable ZIP exported (${mb} MB, ${stats.count} media files)! Transfer this file to PC2.`);
     }
 
     async function handleZipOrJsonImport(e) {
@@ -1496,26 +1653,47 @@
         const isZip = file.name.toLowerCase().endsWith('.zip') || (file.type && file.type.includes('zip'));
 
         if (isZip) {
-            showToast(`⏳ Unpacking ${file.name} and extracting media assets onto this PC...`);
+            showToast(`⏳ Unpacking ${file.name} and extracting media assets...`);
+            let importedQuiz = null;
+            let extractedCount = 0;
+
+            // 1. Try local server first (if running server.py)
             try {
                 const resp = await fetch('/api/import_quiz_zip', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/zip'
-                    },
+                    headers: { 'Content-Type': 'application/zip' },
                     body: file
                 });
 
-                const result = await resp.json();
-                if (!resp.ok || !result.success) {
-                    throw new Error(result.error || result.message || 'Import failed');
+                if (resp.ok) {
+                    const result = await resp.json();
+                    if (result.success) {
+                        importedQuiz = result.quiz || result.quiz_data;
+                        extractedCount = result.media_count !== undefined ? result.media_count : ((result.files_extracted && result.files_extracted.length) || 0);
+                    }
                 }
+            } catch (serverErr) {
+                console.log('[Import ZIP] Local server unavailable, using client-side JSZip unpacker.');
+            }
 
-                const importedQuiz = result.quiz || result.quiz_data;
-                if (importedQuiz) {
-                    normalizeQuizStructure(importedQuiz);
-                    currentQuiz = importedQuiz;
+            // 2. Fallback to client-side JSZip (for GitHub Pages / Static Hosting)
+            if (!importedQuiz) {
+                try {
+                    showToast(`⏳ Extracting ZIP in browser memory via JSZip...`);
+                    const clientResult = await importWithClientJSZip(file);
+                    importedQuiz = clientResult.quiz;
+                    extractedCount = clientResult.media_count;
+                } catch (clientErr) {
+                    console.error('[Import ZIP] Client JSZip error:', clientErr);
+                    alert('Failed to import ZIP bundle: ' + clientErr.message);
+                    e.target.value = '';
+                    return;
                 }
+            }
+
+            if (importedQuiz) {
+                normalizeQuizStructure(importedQuiz);
+                currentQuiz = importedQuiz;
 
                 // Persist & synchronize
                 try {
@@ -1532,12 +1710,8 @@
                 selectedPrelimIndex = 0;
                 renderAll();
 
-                const extractedCount = result.media_count !== undefined ? result.media_count : ((result.files_extracted && result.files_extracted.length) || 0);
                 showToast(`🎉 ZIP imported! Extracted ${extractedCount} media files & activated quiz.`);
                 alert(`🎉 Quiz imported successfully!\n\n• Quiz: ${currentQuiz.meta?.title || 'Quiz'}\n• Unpacked: ${extractedCount} media files\n• Active on: This PC (${window.location.origin})`);
-            } catch (err) {
-                console.error('Import ZIP error:', err);
-                alert('Failed to import ZIP bundle: ' + err.message + '\n\nEnsure server.py is running on this PC!');
             }
         } else {
             // JSON fallback
