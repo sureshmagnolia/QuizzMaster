@@ -1,0 +1,309 @@
+/* Design Tokens & Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   Curated High-Contrast Dark Themes for Stage & Projection
+   ========================================================================== */
+
+/* 1. Emerald Rainforest (Default) */
+:root, [data-theme="emerald"] {
+    --theme-name: 'emerald';
+    --bg-dark: #04140D;
+    --bg-canvas: #082115;
+    --bg-panel: rgba(12, 38, 25, 0.88);
+    --bg-card: rgba(16, 48, 32, 0.95);
+    --bg-card-subtle: rgba(5, 23, 15, 0.92);
+    --accent-primary: #10B981;
+    --accent-dark: #064E3B;
+    --accent-glow: rgba(16, 185, 129, 0.28);
+    --border-accent: rgba(16, 185, 129, 0.4);
+    --border-gold: #F59E0B;
+    --border-subtle: rgba(245, 158, 11, 0.25);
+    --border-card: rgba(255, 255, 255, 0.12);
+    --border-emerald: #10B981;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #A7F3D0;
+    --text-muted: #94A3B8;
+    --emerald-primary: #10B981;
+    --emerald-dark: #064E3B;
+    --amber-primary: #F59E0B;
+    --sapphire-primary: #3B82F6;
+    --ruby-primary: #EF4444;
+    --gold-primary: #F59E0B;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-glow: 0 0 25px rgba(245, 158, 11, 0.25);
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-ml: 'Anek Malayalam', 'Nirmala UI', sans-serif;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%), linear-gradient(180deg, #020C07 0%, #061F13 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.96));
+}
+
+/* 2. Midnight Oceanic / Deep Sapphire */
+[data-theme="sapphire"] {
+    --theme-name: 'sapphire';
+    --bg-dark: #020B17;
+    --bg-canvas: #06162E;
+    --bg-panel: rgba(10, 31, 64, 0.88);
+    --bg-card: rgba(14, 43, 87, 0.95);
+    --bg-card-subtle: rgba(5, 21, 46, 0.92);
+    --accent-primary: #0EA5E9;
+    --accent-dark: #0369A1;
+    --accent-glow: rgba(14, 165, 233, 0.3);
+    --border-accent: rgba(14, 165, 233, 0.4);
+    --border-gold: #F59E0B;
+    --border-subtle: rgba(56, 189, 248, 0.28);
+    --border-card: rgba(255, 255, 255, 0.14);
+    --border-emerald: #0EA5E9;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #BAE6FD;
+    --text-muted: #94A3B8;
+    --emerald-primary: #0EA5E9;
+    --emerald-dark: #0369A1;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.16) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%), linear-gradient(180deg, #01060E 0%, #06172E 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(12, 53, 107, 0.94), rgba(4, 14, 28, 0.98));
+}
+
+/* 3. Volcanic Obsidian / Crimson Twilight */
+[data-theme="obsidian"] {
+    --theme-name: 'obsidian';
+    --bg-dark: #0E0508;
+    --bg-canvas: #1A0A10;
+    --bg-panel: rgba(43, 15, 26, 0.88);
+    --bg-card: rgba(61, 21, 37, 0.95);
+    --bg-card-subtle: rgba(26, 9, 16, 0.92);
+    --accent-primary: #F43F5E;
+    --accent-dark: #9F1239;
+    --accent-glow: rgba(244, 63, 94, 0.3);
+    --border-accent: rgba(244, 63, 94, 0.4);
+    --border-gold: #F59E0B;
+    --border-subtle: rgba(244, 63, 94, 0.28);
+    --border-card: rgba(255, 255, 255, 0.14);
+    --border-emerald: #F43F5E;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #FECDD3;
+    --text-muted: #A1A1AA;
+    --emerald-primary: #F43F5E;
+    --emerald-dark: #9F1239;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.16) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%), linear-gradient(180deg, #080204 0%, #170910 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(136, 19, 55, 0.94), rgba(18, 5, 11, 0.98));
+}
+
+/* 4. Royal Amethyst / Sahyadri Twilight */
+[data-theme="amethyst"] {
+    --theme-name: 'amethyst';
+    --bg-dark: #0A0514;
+    --bg-canvas: #140A26;
+    --bg-panel: rgba(36, 17, 66, 0.88);
+    --bg-card: rgba(49, 24, 92, 0.95);
+    --bg-card-subtle: rgba(22, 10, 41, 0.92);
+    --accent-primary: #8B5CF6;
+    --accent-dark: #5B21B6;
+    --accent-glow: rgba(139, 92, 246, 0.3);
+    --border-accent: rgba(139, 92, 246, 0.4);
+    --border-gold: #F59E0B;
+    --border-subtle: rgba(167, 139, 250, 0.28);
+    --border-card: rgba(255, 255, 255, 0.14);
+    --border-emerald: #8B5CF6;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #DDD6FE;
+    --text-muted: #A1A1AA;
+    --emerald-primary: #8B5CF6;
+    --emerald-dark: #5B21B6;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.16) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%), linear-gradient(180deg, #05020B 0%, #130924 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(91, 33, 182, 0.94), rgba(15, 6, 26, 0.98));
+}
+
+/* 5. Sahyadri Slate / Arctic Graphite */
+[data-theme="slate"] {
+    --theme-name: 'slate';
+    --bg-dark: #080C14;
+    --bg-canvas: #0F172A;
+    --bg-panel: rgba(30, 41, 59, 0.9);
+    --bg-card: rgba(41, 56, 82, 0.95);
+    --bg-card-subtle: rgba(15, 23, 42, 0.92);
+    --accent-primary: #38BDF8;
+    --accent-dark: #0284C7;
+    --accent-glow: rgba(56, 189, 248, 0.3);
+    --border-accent: rgba(56, 189, 248, 0.4);
+    --border-gold: #F59E0B;
+    --border-subtle: rgba(245, 158, 11, 0.3);
+    --border-card: rgba(255, 255, 255, 0.15);
+    --border-emerald: #38BDF8;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #E2E8F0;
+    --text-muted: #94A3B8;
+    --emerald-primary: #38BDF8;
+    --emerald-dark: #0284C7;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%), linear-gradient(180deg, #04070D 0%, #0E1626 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(9, 14, 24, 0.98));
+}
+
+/* 6. Golden Savanna / Warm Dusk Bronze */
+[data-theme="savanna"] {
+    --theme-name: 'savanna';
+    --bg-dark: #120904;
+    --bg-canvas: #1F1007;
+    --bg-panel: rgba(45, 23, 11, 0.88);
+    --bg-card: rgba(64, 32, 16, 0.95);
+    --bg-card-subtle: rgba(26, 13, 6, 0.92);
+    --accent-primary: #F59E0B;
+    --accent-dark: #B45309;
+    --accent-glow: rgba(245, 158, 11, 0.3);
+    --border-accent: rgba(245, 158, 11, 0.45);
+    --border-gold: #FBBF24;
+    --border-subtle: rgba(245, 158, 11, 0.28);
+    --border-card: rgba(255, 255, 255, 0.14);
+    --border-emerald: #F59E0B;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #FDE68A;
+    --text-muted: #A1A1AA;
+    --emerald-primary: #F59E0B;
+    --emerald-dark: #B45309;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.16) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(234, 88, 12, 0.08) 0%, transparent 40%), linear-gradient(180deg, #0A0401 0%, #170B05 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(146, 64, 14, 0.94), rgba(24, 11, 5, 0.98));
+}
+
+/* 7. Cyberpunk Neon (Electric Purple & Neon Cyan) */
+[data-theme="cyber"] {
+    --theme-name: 'cyber';
+    --bg-dark: #070614;
+    --bg-canvas: #0E0A24;
+    --bg-panel: rgba(22, 16, 52, 0.90);
+    --bg-card: rgba(32, 24, 76, 0.95);
+    --bg-card-subtle: rgba(14, 10, 34, 0.92);
+    --accent-primary: #06B6D4;
+    --accent-dark: #0891B2;
+    --accent-glow: rgba(6, 182, 212, 0.35);
+    --border-accent: rgba(6, 182, 212, 0.5);
+    --border-gold: #F43F5E;
+    --border-subtle: rgba(168, 85, 247, 0.32);
+    --border-card: rgba(255, 255, 255, 0.16);
+    --border-emerald: #06B6D4;
+    --text-white: #FFFFFF;
+    --text-gold: #F472B6;
+    --text-mint: #67E8F9;
+    --text-muted: #94A3B8;
+    --emerald-primary: #06B6D4;
+    --emerald-dark: #0891B2;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.18) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.14) 0%, transparent 40%), linear-gradient(180deg, #05030F 0%, #0E0A26 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(49, 18, 92, 0.96), rgba(10, 6, 26, 0.98));
+}
+
+/* 8. Imperial Monochrome (Deep Charcoal & Regal Gold) */
+[data-theme="monochrome"] {
+    --theme-name: 'monochrome';
+    --bg-dark: #0A0A0C;
+    --bg-canvas: #131316;
+    --bg-panel: rgba(24, 24, 28, 0.92);
+    --bg-card: rgba(36, 36, 42, 0.95);
+    --bg-card-subtle: rgba(18, 18, 22, 0.92);
+    --accent-primary: #F59E0B;
+    --accent-dark: #B45309;
+    --accent-glow: rgba(245, 158, 11, 0.35);
+    --border-accent: rgba(245, 158, 11, 0.55);
+    --border-gold: #FBBF24;
+    --border-subtle: rgba(255, 255, 255, 0.20);
+    --border-card: rgba(255, 255, 255, 0.18);
+    --border-emerald: #F59E0B;
+    --text-white: #FFFFFF;
+    --text-gold: #FBBF24;
+    --text-mint: #E5E7EB;
+    --text-muted: #A1A1AA;
+    --emerald-primary: #F59E0B;
+    --emerald-dark: #B45309;
+    --bg-gradient: radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.14) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 40%), linear-gradient(180deg, #060608 0%, #121215 100%);
+    --answer-card-grad: linear-gradient(135deg, rgba(45, 45, 52, 0.96), rgba(12, 12, 14, 0.98));
+}
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: var(--bg-gradient);
+    color: var(--text-white);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, background-image 0.3s ease;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+}
+
+.ml-text, [lang="ml"], .qn-text-ml, .answer-title-ml, .team-name-ml, .round-title-sub, .exam-card-ml, .round-intro-title-ml, .round-desc-ml, .clue-ml, .fact-ml, .welcome-title-ml, .winner-title-ml, .prelim-q-ml {
+    font-family: var(--font-ml) !important;
+    letter-spacing: normal;
+    line-height: 1.42;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+    background: var(--bg-panel);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+.gold-glow {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.35);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-gold {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--text-gold);
+    border: 1px solid var(--border-gold);
+}
+
+.badge-emerald {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--emerald-primary);
+    border: 1px solid var(--emerald-primary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--emerald-dark);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--emerald-primary);
+}

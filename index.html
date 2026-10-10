@@ -3,104 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizzMaster | Setup Wizard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <title>The Sahyadri Wildlife Quiz 2026 | Public Projection Screen</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css?v=65">
+    <link rel="stylesheet" href="css/public.css?v=65">
 </head>
 <body>
-    <header>
-        <div class="brand">QuizzMaster ✨</div>
-        <div style="display: flex; gap: 10px;">
-            <input type="file" id="importFile" style="display:none" accept=".json">
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import JSON</button>
-            <button class="btn btn-secondary" onclick="exportConfig()">📤 Export JSON</button>
-            <button class="btn btn-primary" onclick="launchQuiz()">🚀 Launch Quiz</button>
-        </div>
-    </header>
-
-    <main class="animate-fade-in">
-        <div class="setup-grid">
-            <div class="glass-panel">
-                <h2 style="margin-bottom: 20px;">⚙️ Global Settings</h2>
-                <div class="form-group">
-                    <label>Quiz Title</label>
-                    <input type="text" id="quizTitle" placeholder="e.g. The Grand Pub Quiz 2026">
+    <div class="public-container">
+        <!-- Top Navigation & Stage HUD -->
+        <header class="public-header glass-panel">
+            <div class="brand-section">
+                <div class="brand-institution-logos" id="publicBrandLogos">
+                    <img src="assets/branding/gvc_college_emblem_512.png" alt="Primary Logo" class="brand-logo-img emblem-college" id="publicLogoPrimary" />
+                    <img src="assets/branding/gvc_botany_logo.png" alt="Secondary Logo" class="brand-logo-img emblem-botany" id="publicLogoSecondary" />
                 </div>
-                <div class="form-group">
-                    <label>Number of Teams</label>
-                    <select id="teamCount" onchange="generateTeamInputs()">
-                        <option value="2">2 Teams</option>
-                        <option value="3">3 Teams</option>
-                        <option value="4" selected>4 Teams</option>
-                        <option value="5">5 Teams</option>
-                        <option value="6">6 Teams</option>
-                        <option value="8">8 Teams</option>
-                        <option value="10">10 Teams</option>
-                    </select>
+                <div class="brand-title">
+                    <h1 id="publicQuizTitle">THE SAHYADRI WILDLIFE QUIZ</h1>
+                    <p class="brand-conducted-by" id="publicBrandConductedBy">
+                        <span class="inst-dept" id="publicDeptText">Department of Botany</span> • <span class="inst-college" id="publicInstText">Govt. Victoria College, Palakkad</span>
+                    </p>
                 </div>
             </div>
 
-            <div class="glass-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>👥 Team Roster</h2>
-                </div>
-                <div id="teamsContainer" class="teams-list"></div>
+            <div class="round-info-pill" id="roundInfoPill">
+                <span class="round-title-main" id="roundTitleEn">Stage Finals</span>
+                <span class="round-title-sub ml-text" id="roundTitleMl">സ്റ്റേജ് മത്സരങ്ങൾ</span>
             </div>
-        </div>
 
-        <div class="glass-panel" style="margin-top: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>🎪 Round Builder</h2>
-                <button class="btn btn-secondary" onclick="addRound()">➕ Add Round</button>
+            <div class="timer-container">
+                <div class="timer-box" id="timerBox">30</div>
             </div>
-            <div id="roundsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
-        </div>
-    </main>
+        </header>
 
-    <!-- Question Builder Modal -->
-    <div id="qModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalRoundTitle">Edit Questions</h2>
-                <button class="btn btn-secondary" onclick="closeModal()" style="padding: 5px 10px;">✕</button>
-            </div>
-            <div class="modal-body">
-                <div id="questionsList"></div>
-                
-                <div style="background: rgba(15,23,42,0.8); padding: 20px; border-radius: 8px; margin-top: 20px;">
-                    <h3>Add New Question</h3>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label>Question Text</label>
-                        <textarea id="newQText" placeholder="What is the capital of France?"></textarea>
+        <!-- Main Stage Split Layout -->
+        <main class="public-body">
+            <!-- Left Main Stage Area -->
+            <section class="stage-main" id="stageArea">
+                <!-- Dynamically populated via public_app.js -->
+            </section>
+
+            <!-- Right Dedicated Live Scoreboard (Self-Contained) -->
+            <aside class="stage-sidebar glass-panel" id="stageSidebar">
+                <div class="scoreboard-header">
+                    <div class="scoreboard-title-group">
+                        <span class="scoreboard-header-icon">🏆</span>
+                        <h3>Live Leaderboard</h3>
                     </div>
-                    <div class="form-group">
-                        <label>Question Media (Local File or YouTube ID)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="newQMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or filename">
-                            <input type="file" id="newQMediaFile" style="width: 250px;">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                        <label>Answer Text</label>
-                        <textarea id="newAText" placeholder="Paris"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Answer Media (Local File or YouTube ID)</label>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" id="newAMedia" placeholder="e.g. dQw4w9WgXcQ (YT ID) or filename">
-                            <input type="file" id="newAMediaFile" style="width: 250px;">
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" style="width: 100%;" onclick="saveNewQuestion()">➕ Save Question</button>
+                    <span class="badge badge-gold ml-text">തത്സമയ സ്കോർ</span>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Done</button>
-            </div>
-        </div>
+                <div class="teams-list" id="teamsList">
+                    <!-- Dynamically populated & sorted 4 team score cards -->
+                </div>
+                <div class="stage-sidebar-footer" id="sidebarFooter">
+                    <!-- Scoring rules & stage status matrix -->
+                </div>
+            </aside>
+        </main>
     </div>
 
-    <script src="js/setup.js"></script>
+    <!-- Discreet Floating Projector Zoom & Fullscreen Calibration HUD -->
+    <div id="projectorZoomHud" class="projector-zoom-hud" title="Projector Screen Calibration">
+        <span class="hud-icon">📽️</span>
+        <button type="button" class="hud-btn" id="hudBtnZoomOut" onclick="adjustProjectorZoom(-0.05)" title="Zoom Out (-5%)">−</button>
+        <span id="hudZoomText" class="hud-text" onclick="setProjectorZoom(1.0)" title="Click to reset to 100%">100%</span>
+        <button type="button" class="hud-btn" id="hudBtnZoomIn" onclick="adjustProjectorZoom(0.05)" title="Zoom In (+5%)">+</button>
+        <button type="button" class="hud-btn hud-btn-fit" onclick="togglePublicFullscreen()" title="Toggle True Borderless Fullscreen (F11)">⛶</button>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="presets/sample_multimedia_quiz.js?v=66"></script>
+    <script src="presets/sahyadri_wildlife_2026.js?v=66"></script>
+    <script src="js/media_player.js?v=66"></script>
+    <script src="js/sound_effects.js?v=66"></script>
+    <script src="js/quiz_data.js?v=66"></script>
+    <script src="js/quiz_state.js?v=66"></script>
+    <script src="js/public_app.js?v=66"></script>
 </body>
 </html>

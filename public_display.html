@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sahyadri Wildlife Quiz 2026 | Public Projection Screen</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css?v=65">
+    <link rel="stylesheet" href="css/public.css?v=65">
+</head>
+<body>
+    <div class="public-container">
+        <!-- Top Navigation & Stage HUD -->
+        <header class="public-header glass-panel">
+            <div class="brand-section">
+                <div class="brand-institution-logos">
+                    <img src="assets/branding/gvc_college_emblem_512.png" alt="Govt. Victoria College Palakkad" class="brand-logo-img emblem-college" title="Government Victoria College, Palakkad" />
+                    <img src="assets/branding/gvc_botany_logo.png" alt="Department of Botany" class="brand-logo-img emblem-botany" title="Department of Botany, GVC Palakkad" />
+                </div>
+                <div class="brand-title">
+                    <h1>THE SAHYADRI WILDLIFE QUIZ</h1>
+                    <p class="brand-conducted-by">
+                        <span class="inst-dept">Department of Botany</span> • <span class="inst-college">Govt. Victoria College, Palakkad</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="round-info-pill" id="roundInfoPill">
+                <span class="round-title-main" id="roundTitleEn">Stage Finals</span>
+                <span class="round-title-sub ml-text" id="roundTitleMl">സ്റ്റേജ് മത്സരങ്ങൾ</span>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-box" id="timerBox">30</div>
+            </div>
+        </header>
+
+        <!-- Main Stage Split Layout -->
+        <main class="public-body">
+            <!-- Left Main Stage Area -->
+            <section class="stage-main" id="stageArea">
+                <!-- Dynamically populated via public_app.js -->
+            </section>
+
+            <!-- Right Dedicated Live Scoreboard (Self-Contained) -->
+            <aside class="stage-sidebar glass-panel" id="stageSidebar">
+                <div class="scoreboard-header">
+                    <div class="scoreboard-title-group">
+                        <span class="scoreboard-header-icon">🏆</span>
+                        <h3>Live Leaderboard</h3>
+                    </div>
+                    <span class="badge badge-gold ml-text">തത്സമയ സ്കോർ</span>
+                </div>
+                <div class="teams-list" id="teamsList">
+                    <!-- Dynamically populated & sorted 4 team score cards -->
+                </div>
+                <div class="stage-sidebar-footer" id="sidebarFooter">
+                    <!-- Scoring rules & stage status matrix -->
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/sound_effects.js?v=65"></script>
+    <script src="js/quiz_data.js?v=65"></script>
+    <script src="js/quiz_state.js?v=65"></script>
+    <script src="js/public_app.js?v=65"></script>
+</body>
+</html>

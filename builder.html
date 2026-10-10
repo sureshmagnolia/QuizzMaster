@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizzMaster Studio — Universal Quiz Builder & Configurator</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/builder.css">
+</head>
+<body>
+    <!-- Top Header Navigation -->
+    <header class="studio-header">
+        <div class="brand-section">
+            <span class="brand-icon">🛠️</span>
+            <div>
+                <h1 class="brand-title">QuizzMaster Studio <span class="brand-badge">Pro v2.0</span></h1>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <!-- Preset Selector -->
+            <select id="presetSelector" class="form-select" style="max-width: 260px;" title="Load bundled preset">
+                <option value="">📂 Load Preset Quiz...</option>
+                <option value="sample_multimedia">✨ Sample Multi-Media Quiz (Image, Audio, Video, YouTube)</option>
+                <option value="sahyadri_wildlife">🌿 Sahyadri Wildlife Quiz 2026 (Preserved Archive)</option>
+                <option value="clean_blank">🧹 Clean Blank Quiz (Start from Scratch)</option>
+            </select>
+
+            <button type="button" class="btn" id="btnImportJson" title="Import from JSON">📥 Import JSON</button>
+            <input type="file" id="fileImportJson" accept=".json" style="display:none;">
+
+            <button type="button" class="btn" id="btnExportJson" title="Export complete quiz as JSON">💾 Export JSON</button>
+            <button type="button" class="btn" id="btnExportCsv" title="Export questions as CSV">📊 Export CSV</button>
+
+            <a href="qm_control.html" target="_blank" class="btn" title="Open Quizmaster Cockpit in new window">🎛️ QM Cockpit</a>
+            <a href="index.html" target="_blank" class="btn" title="Open Public Stage Display in new window">📽️ Stage Screen</a>
+
+            <button type="button" class="btn btn-primary" id="btnSaveApply" title="Save changes and broadcast live to all screens">🚀 Save & Apply</button>
+        </div>
+    </header>
+
+    <!-- Sub-navigation Tabs -->
+    <nav class="studio-tabs">
+        <button type="button" class="tab-btn active" data-tab="tab-meta">🏷️ Quiz Info & Theme</button>
+        <button type="button" class="tab-btn" data-tab="tab-teams">👥 Teams Manager (<span id="teamCountBadge">4</span>)</button>
+        <button type="button" class="tab-btn" data-tab="tab-rounds">🌀 Rounds Architecture (<span id="roundCountBadge">6</span>)</button>
+        <button type="button" class="tab-btn" data-tab="tab-questions">❓ Questions & Media Studio</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="studio-main">
+        <!-- TAB 1: METADATA & THEME -->
+        <section id="tab-meta" class="tab-pane active">
+            <div class="studio-card">
+                <div class="card-header">
+                    <h2 class="card-title">Quiz Details & Visual Theme</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="metaTitle">Quiz Title (English)</label>
+                        <input type="text" id="metaTitle" class="form-input" placeholder="e.g. Annual Inter-Collegiate Quiz 2026">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="metaTitleMl">Quiz Title (Regional / Malayalam)</label>
+                        <input type="text" id="metaTitleMl" class="form-input ml-text" placeholder="e.g. വാർഷിക ക്വിസ് മത്സരം 2026">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="metaSubtitle">Subtitle / Edition</label>
+                        <input type="text" id="metaSubtitle" class="form-input" placeholder="e.g. College Level Championship">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="metaCurator">Curator / Quizmaster</label>
+                        <input type="text" id="metaCurator" class="form-input" placeholder="e.g. Department of Botany / Wildlife Club">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="metaTheme">Visual Theme Palette</label>
+                        <select id="metaTheme" class="form-select">
+                            <option value="emerald">🌿 Emerald Rainforest (Deep Forest Green & Gold)</option>
+                            <option value="sapphire">🌊 Oceanic Sapphire (Deep Navy & Electric Cyan)</option>
+                            <option value="obsidian">🌋 Volcanic Obsidian (Crimson & Rose Gold)</option>
+                            <option value="amethyst">🔮 Royal Amethyst (Deep Purple & Radiant Violet)</option>
+                            <option value="slate">🏔️ Arctic Slate (Midnight Blue-Grey & Sky Blue)</option>
+                            <option value="savanna">🦁 Golden Savanna (Warm Dusk Bronze & Amber)</option>
+                            <option value="cyber">⚡ Cyberpunk Neon (Electric Purple & Neon Cyan)</option>
+                            <option value="monochrome">🎩 Imperial Monochrome (Deep Charcoal & Regal Gold)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: INSTITUTION & BRANDING LOGOS -->
+            <div class="studio-card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">🏛️ Institution Branding & Public Screen Logos</h2>
+                        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.2rem;">
+                            Configure logos displayed on the Public Projection Screen, Quizmaster Cockpit, and Finalist Diplomas.
+                        </p>
+                    </div>
+                    <label class="toggle-switch-label">
+                        <input type="checkbox" id="metaShowLogos" class="toggle-switch-input" checked>
+                        <span>Display Logos on Public Screen</span>
+                    </label>
+                </div>
+
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="metaInstitution">Host Institution / College / School</label>
+                        <input type="text" id="metaInstitution" class="form-input" placeholder="e.g. Government Victoria College, Palakkad">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="metaDepartment">Organizing Department / Club / Society</label>
+                        <input type="text" id="metaDepartment" class="form-input" placeholder="e.g. Department of Botany">
+                    </div>
+                </div>
+
+                <div class="branding-grid">
+                    <!-- Primary Logo (Institution / Main Emblem) -->
+                    <div class="logo-card">
+                        <div class="logo-card-title">
+                            <span>🏛️ Primary Logo (Institution Emblem)</span>
+                        </div>
+                        <div class="logo-preview-box" id="logoPrimaryPreview">
+                            <div class="logo-placeholder">
+                                <span>🏛️</span>
+                                <span>No logo loaded</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="metaLogoPrimary">Image URL or Local Path</label>
+                            <input type="text" id="metaLogoPrimary" class="form-input" placeholder="e.g. assets/branding/gvc_college_emblem_512.png">
+                        </div>
+                        <div class="logo-actions">
+                            <button type="button" class="btn btn-sm btn-primary" id="btnUploadLogoPrimary">📁 Browse File...</button>
+                            <input type="file" id="fileLogoPrimary" accept="image/*" style="display: none;">
+                            <button type="button" class="btn btn-sm btn-danger" id="btnClearLogoPrimary">✕ Remove</button>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Logo (Department / Club / Sponsor) -->
+                    <div class="logo-card">
+                        <div class="logo-card-title">
+                            <span>🌿 Secondary Logo (Department / Club / Sponsor)</span>
+                        </div>
+                        <div class="logo-preview-box" id="logoSecondaryPreview">
+                            <div class="logo-placeholder">
+                                <span>🌿</span>
+                                <span>No logo loaded</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="metaLogoSecondary">Image URL or Local Path</label>
+                            <input type="text" id="metaLogoSecondary" class="form-input" placeholder="e.g. assets/branding/gvc_botany_logo.png">
+                        </div>
+                        <div class="logo-actions">
+                            <button type="button" class="btn btn-sm btn-primary" id="btnUploadLogoSecondary">📁 Browse File...</button>
+                            <input type="file" id="fileLogoSecondary" accept="image/*" style="display: none;">
+                            <button type="button" class="btn btn-sm btn-danger" id="btnClearLogoSecondary">✕ Remove</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Presets Row -->
+                <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color); flex-wrap: wrap;">
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Quick Presets:</span>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnPresetGvcLogos">🌿 Apply Victoria College & Botany Logos</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="btnClearAllLogos">✕ Clear Both Logos</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: TEAMS CONFIGURATION -->
+        <section id="tab-teams" class="tab-pane">
+            <div class="studio-card">
+                <div class="card-header">
+                    <h2 class="card-title">Participating Teams Configuration</h2>
+                    <div style="display:flex; align-items:center; gap: 0.75rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Team Count:</span>
+                        <input type="range" id="teamCountSlider" min="2" max="12" value="4" style="width: 120px; cursor: pointer;">
+                        <span id="teamCountDisplay" style="font-weight: 700; color: var(--accent); min-width: 20px;">4</span>
+                        <button type="button" class="btn btn-sm btn-primary" id="btnAddTeam">+ Add Team</button>
+                    </div>
+                </div>
+                <div class="teams-grid" id="teamsContainer">
+                    <!-- Dynamic Team Cards Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ROUNDS CONFIGURATION -->
+        <section id="tab-rounds" class="tab-pane">
+            <div class="studio-card">
+                <div class="card-header">
+                    <h2 class="card-title">Rounds & Scoring Profiles</h2>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAddRound">+ Add New Round</button>
+                </div>
+                <div class="rounds-list" id="roundsContainer">
+                    <!-- Dynamic Round Cards Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: QUESTIONS & MEDIA STUDIO -->
+        <section id="tab-questions" class="tab-pane">
+            <div class="questions-layout">
+                <!-- Sidebar: Question List for Selected Round -->
+                <aside class="questions-sidebar">
+                    <div class="form-group">
+                        <label class="form-label" for="qRoundSelector">Active Round</label>
+                        <select id="qRoundSelector" class="form-select">
+                            <!-- Injected by JS -->
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Questions in Round:</span>
+                        <button type="button" class="btn btn-sm btn-primary" id="btnAddQuestion">+ Add</button>
+                    </div>
+                    <div class="question-nav-list" id="questionNavList">
+                        <!-- Injected by JS -->
+                    </div>
+                </aside>
+
+                <!-- Main Form: Active Question Editor -->
+                <div class="studio-card" id="questionEditorCard">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span class="round-type-pill" id="activeQuestionSerialBadge">R01-Q1</span>
+                            <h2 class="card-title" id="activeQuestionHeading">Question Editor</h2>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" class="btn btn-sm btn-danger" id="btnDeleteQuestion">🗑️ Delete Question</button>
+                        </div>
+                    </div>
+
+                    <!-- Question Prompts -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="qTextEn">Question Prompt (English)</label>
+                            <textarea id="qTextEn" class="form-textarea" placeholder="Enter question text here..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="qTextMl">Question Prompt (Regional / Malayalam)</label>
+                            <textarea id="qTextMl" class="form-textarea ml-text" placeholder="ചോദ്യം ഇവിടെ ടൈപ്പ് ചെയ്യുക..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Question Media Slot -->
+                    <div class="media-slot-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="color: var(--accent);">📷 Question Media (Shown before/with question)</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <select id="qMediaType" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                                    <option value="none">No Media (Text Only)</option>
+                                    <option value="image">Image (JPG/PNG/WebP)</option>
+                                    <option value="audio">Audio (MP3/WAV/Bioacoustic)</option>
+                                    <option value="video">Local Video (MP4/WebM)</option>
+                                    <option value="youtube">YouTube Video Clip</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="qMediaFields" style="margin-top: 0.75rem; display: none;">
+                            <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
+                                <div class="form-group">
+                                    <label class="form-label" for="qMediaSrc">Media URL / File Path / YouTube URL</label>
+                                    <input type="text" id="qMediaSrc" class="form-input" placeholder="e.g. assets/images/flower.jpg or https://youtu.be/xxx">
+                                </div>
+                                <div class="form-group yt-only-field" style="display:none; width: 100px;">
+                                    <label class="form-label" for="qMediaYtStart">Start (Sec)</label>
+                                    <input type="number" id="qMediaYtStart" class="form-input" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group yt-only-field" style="display:none; width: 100px;">
+                                    <label class="form-label" for="qMediaYtEnd">End (Sec)</label>
+                                    <input type="number" id="qMediaYtEnd" class="form-input" min="0" placeholder="30">
+                                </div>
+                            </div>
+                            <!-- Live Preview Area -->
+                            <div class="media-preview-area" id="qMediaPreview">
+                                <div class="media-preview-placeholder"><span>Preview will appear here</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Answers -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="aTextEn">Answer (English / Scientific)</label>
+                            <input type="text" id="aTextEn" class="form-input" placeholder="e.g. Malabar Giant Squirrel (Ratufa indica)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="aTextMl">Answer (Regional / Malayalam)</label>
+                            <input type="text" id="aTextMl" class="form-input ml-text" placeholder="e.g. മലയണ്ണാൻ">
+                        </div>
+                    </div>
+
+                    <!-- Answer Media Slot -->
+                    <div class="media-slot-box" style="margin-top: 1.25rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label class="form-label" style="color: #38bdf8;">🎬 Answer Media (Shown upon Answer Reveal)</label>
+                            <select id="aMediaType" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                                <option value="none">No Media (Text Only)</option>
+                                <option value="image">Image (High-Res Photograph)</option>
+                                <option value="audio">Audio Track</option>
+                                <option value="video">Local Video (MP4)</option>
+                                <option value="youtube">YouTube Clip</option>
+                            </select>
+                        </div>
+
+                        <div id="aMediaFields" style="margin-top: 0.75rem; display: none;">
+                            <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
+                                <div class="form-group">
+                                    <label class="form-label" for="aMediaSrc">Answer Media URL / File Path / YouTube URL</label>
+                                    <input type="text" id="aMediaSrc" class="form-input" placeholder="e.g. assets/images/full_photo.jpg">
+                                </div>
+                                <div class="form-group a-yt-only-field" style="display:none; width: 100px;">
+                                    <label class="form-label" for="aMediaYtStart">Start (Sec)</label>
+                                    <input type="number" id="aMediaYtStart" class="form-input" min="0" placeholder="0">
+                                </div>
+                                <div class="form-group a-yt-only-field" style="display:none; width: 100px;">
+                                    <label class="form-label" for="aMediaYtEnd">End (Sec)</label>
+                                    <input type="number" id="aMediaYtEnd" class="form-input" min="0" placeholder="30">
+                                </div>
+                            </div>
+                            <!-- Live Preview Area -->
+                            <div class="media-preview-area" id="aMediaPreview">
+                                <div class="media-preview-placeholder"><span>Answer preview will appear here</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clues (For Clue Hunter Round) -->
+                    <div id="cluesSection" style="margin-top: 1.25rem; display: none;">
+                        <label class="form-label" style="color: var(--warning);">🕵️ Progressive Clues (Clue Hunter Mode)</label>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top: 0.5rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="clue1En">Clue 1 (+15 Pts)</label>
+                                <input type="text" id="clue1En" class="form-input" placeholder="First obscure clue...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="clue1Ml">Clue 1 (Malayalam)</label>
+                                <input type="text" id="clue1Ml" class="form-input ml-text" placeholder="സൂചന 1...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="clue2En">Clue 2 (+10 Pts)</label>
+                                <input type="text" id="clue2En" class="form-input" placeholder="Second intermediate clue...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="clue2Ml">Clue 2 (Malayalam)</label>
+                                <input type="text" id="clue2Ml" class="form-input ml-text" placeholder="സൂചന 2...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="clue3En">Clue 3 (+5 Pts)</label>
+                                <input type="text" id="clue3En" class="form-input" placeholder="Third direct clue...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="clue3Ml">Clue 3 (Malayalam)</label>
+                                <input type="text" id="clue3Ml" class="form-input ml-text" placeholder="സൂചന 3...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Facts & Notes -->
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.25rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="factEn">Fun Fact / Background Explanation (English)</label>
+                            <textarea id="factEn" class="form-textarea" placeholder="Extra ecological trivia or historical lore..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="factMl">Fun Fact (Regional / Malayalam)</label>
+                            <textarea id="factMl" class="form-textarea ml-text" placeholder="അധിക വിവരങ്ങൾ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Status Toast Notification -->
+    <div id="statusToast" class="status-toast">Quiz Updated & Synchronized!</div>
+
+    <!-- Scripts -->
+    <script src="presets/sahyadri_wildlife_2026.js"></script>
+    <script src="presets/sample_multimedia_quiz.js"></script>
+    <script src="js/media_player.js"></script>
+    <script src="js/quiz_data.js"></script>
+    <script src="js/quiz_state.js"></script>
+    <script src="js/builder_app.js"></script>
+</body>
+</html>

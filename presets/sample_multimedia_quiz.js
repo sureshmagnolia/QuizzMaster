@@ -1,0 +1,505 @@
+const PRESET_SAMPLE_MULTIMEDIA = {
+  "version": "2.0.0",
+  "meta": {
+    "title": "QuizzMaster Pro — Universal Demonstration Quiz",
+    "title_ml": "ക്വിസ്മാസ്റ്റർ പ്രോ — മാതൃകാ മൾട്ടിമീഡിയ ക്വിസ്",
+    "subtitle": "Interactive Multi-Round & Multi-Media Showcase",
+    "subtitle_ml": "ചിത്രങ്ങൾ, ഓഡിയോ, വീഡിയോ, യൂട്യൂബ് എന്നിവ ഉൾക്കൊള്ളുന്ന മാതൃകാ ക്വിസ്",
+    "curator": "QuizzMaster Engine",
+    "institution": "National Science & Arts League",
+    "department": "Inter-Collegiate Quiz Board",
+    "logo_primary": "assets/branding/gvc_college_emblem_512.png",
+    "logo_secondary": "assets/branding/gvc_botany_logo.png",
+    "show_logos": true,
+    "theme": "sapphire"
+  },
+  "teams": [
+    {
+      "id": "team_1",
+      "num": 1,
+      "name": "Team Phoenix",
+      "name_ml": "ടീം ഫീനിക്സ്",
+      "species": "Ignis Avis",
+      "lore": "The legendary firebird rising from the ashes.",
+      "lore_ml": "ചാരത്തിൽ നിന്ന് ഉയർത്തെഴുന്നേൽക്കുന്ന സുവർണ്ണ പക്ഷി.",
+      "color": "#EF4444",
+      "color_dark": "#7F1D1D",
+      "icon": "🔥",
+      "score": 0
+    },
+    {
+      "id": "team_2",
+      "num": 2,
+      "name": "Team Griffin",
+      "name_ml": "ടീം ഗ്രിഫിൻ",
+      "species": "Gryphus Regalis",
+      "lore": "The noble king of beasts and birds of the air.",
+      "lore_ml": "ആകാശത്തിന്റെയും ഭൂമിയുടെയും കാവൽക്കാർ.",
+      "color": "#F59E0B",
+      "color_dark": "#78350F",
+      "icon": "🦅",
+      "score": 0
+    },
+    {
+      "id": "team_3",
+      "num": 3,
+      "name": "Team Leviathan",
+      "name_ml": "ടീം ലെവിയാത്തൻ",
+      "species": "Oceanus Titan",
+      "lore": "Rulers of the unfathomed deep oceans.",
+      "lore_ml": "സമുദ്രത്തിന്റെ അഗാധതയിലെ വൻശക്തികൾ.",
+      "color": "#3B82F6",
+      "color_dark": "#1E3A8A",
+      "icon": "🌊",
+      "score": 0
+    },
+    {
+      "id": "team_4",
+      "num": 4,
+      "name": "Team Basilisk",
+      "name_ml": "ടീം ബാസിലിസ്ക്",
+      "species": "Draco Silva",
+      "lore": "Mystic woodland serpents guarding secret lore.",
+      "lore_ml": "നിഗൂഢ വനങ്ങളിലെ പുരാതന സർപ്പരാജാക്കന്മാർ.",
+      "color": "#10B981",
+      "color_dark": "#064E3B",
+      "icon": "🐉",
+      "score": 0
+    }
+  ],
+  "rounds": [
+    {
+      "round_id": "r1",
+      "round_num": 1,
+      "title": "Round 1: General Potpourri (Direct & Pass)",
+      "title_ml": "റൗണ്ട് 1: പൊതുവിജ്ഞാനം (ഡയറക്ട് & പാസ്)",
+      "type": "direct_pass",
+      "format": "Direct (+10), Pass (+5)",
+      "timing_sec": 30,
+      "pass_timing_sec": 15,
+      "scoring": {
+        "direct": 10,
+        "pass": 5,
+        "wrong": 0
+      },
+      "description": "Standard clockwise direct and pass questions. Answering direct yields +10, while a passed question awards +5.",
+      "description_ml": "നേരിട്ടുള്ള ചോദ്യത്തിന് 10 മാർക്ക്; പാസ്സ് ചോദ്യത്തിന് 5 മാർക്ക്.",
+      "question_ids": [
+        101,
+        102,
+        103,
+        104
+      ]
+    },
+    {
+      "round_id": "r2",
+      "round_num": 2,
+      "title": "Round 2: Visual Safari (Picture Round)",
+      "title_ml": "റൗണ്ട് 2: വിഷ്വൽ സഫാരി (ചിത്ര റൗണ്ട്)",
+      "type": "visual",
+      "format": "Question Image (+10), Pass (+5)",
+      "timing_sec": 30,
+      "pass_timing_sec": 15,
+      "scoring": {
+        "direct": 10,
+        "pass": 5,
+        "wrong": 0
+      },
+      "description": "High-definition image shown with question. Answer reveals species identity and facts.",
+      "description_ml": "ചോദ്യത്തോടൊപ്പം ചിത്രം പ്രദർശിപ്പിക്കുന്നു; ഉത്തരം പറയുമ്പോൾ കൂടുതൽ വിവരങ്ങൾ ലഭിക്കുന്നു.",
+      "question_ids": [
+        201,
+        202,
+        203,
+        204
+      ]
+    },
+    {
+      "round_id": "r3",
+      "round_num": 3,
+      "title": "Round 3: Acoustic Arena (Audio Round)",
+      "title_ml": "റൗണ്ട് 3: അക്കൗസ്റ്റിക് അരീന (ശബ്ദ റൗണ്ട്)",
+      "type": "audio",
+      "format": "Audio Track (+10), Pass (+5)",
+      "timing_sec": 30,
+      "pass_timing_sec": 15,
+      "scoring": {
+        "direct": 10,
+        "pass": 5,
+        "wrong": 0
+      },
+      "description": "Listen to authentic acoustic bio-recordings or voice clips. Answer reveals the source.",
+      "description_ml": "ശബ്ദം കേട്ട് തിരിച്ചറിയുക. ശരിയുത്തരത്തിന് 10 മാർക്ക്.",
+      "question_ids": [
+        301,
+        302
+      ]
+    },
+    {
+      "round_id": "r4",
+      "round_num": 4,
+      "title": "Round 4: Cinema & Video Clip (Local / YouTube)",
+      "title_ml": "റൗണ്ട് 4: വീഡിയോ & സിനിമാ റൗണ്ട് (യൂട്യൂബ് / വീഡിയോ)",
+      "type": "video",
+      "format": "Video Stream (+10), Pass (+5)",
+      "timing_sec": 45,
+      "pass_timing_sec": 20,
+      "scoring": {
+        "direct": 10,
+        "pass": 5,
+        "wrong": 0
+      },
+      "description": "Watch a video clip or streaming YouTube footage before answering.",
+      "description_ml": "വീഡിയോ ക്ലിപ്പ് കണ്ട് ചോദ്യത്തിന് ഉത്തരം നൽകുക.",
+      "question_ids": [
+        401,
+        402
+      ]
+    },
+    {
+      "round_id": "r5",
+      "round_num": 5,
+      "title": "Round 5: Clue Hunter (Mystery Trail)",
+      "title_ml": "റൗണ്ട് 5: ക്ലൂ ഹണ്ടർ (സൂചനകളുടെ വഴി)",
+      "type": "clue_hunter",
+      "format": "Clue 1 (+15), Clue 2 (+10), Clue 3 (+5)",
+      "timing_sec": 45,
+      "pass_timing_sec": 15,
+      "scoring": {
+        "clue1": 15,
+        "clue2": 10,
+        "clue3": 5,
+        "wrong": 0
+      },
+      "description": "Progressive clues revealed one-by-one. Early deduction yields maximum marks.",
+      "description_ml": "മൂന്ന് ഘട്ടങ്ങളിലായി നൽകുന്ന സൂചനകളിൽ നിന്ന് ഉത്തരം കണ്ടെത്തുക.",
+      "question_ids": [
+        501,
+        502
+      ]
+    },
+    {
+      "round_id": "r6",
+      "round_num": 6,
+      "title": "Round 6: Speed Buzzer / Rapid Fire",
+      "title_ml": "റൗണ്ട് 6: ബസ്സർ & റാപ്പിഡ് ഫയർ",
+      "type": "buzzer",
+      "format": "Buzzer (+10 / -5 Penalty)",
+      "timing_sec": 15,
+      "pass_timing_sec": 10,
+      "scoring": {
+        "direct": 10,
+        "penalty": -5
+      },
+      "description": "Fastest-finger first. Answering correctly awards +10, but an incorrect answer incurs a -5 penalty.",
+      "description_ml": "ബസ്സർ അമർത്തി ആദ്യം ഉത്തരം പറയുന്ന ടീമിന് 10 മാർക്ക്; തെറ്റിയാൽ -5 നെഗറ്റീവ് മാർക്ക്.",
+      "question_ids": [
+        601,
+        602
+      ]
+    }
+  ],
+  "all_stage_questions": {
+    "101": {
+      "id": 101,
+      "serial": "R01-Q1",
+      "serial_no": "R01-Q1",
+      "round_id": "r1",
+      "question_en": "Which celestial body in our solar system boasts the tallest known planetary volcano, towering nearly 22 kilometers high?",
+      "question_ml": "സൗരയൂഥത്തിലെ ഏറ്റവും ഉയരം കൂടിയ അഗ്നിപർവ്വതമായ ഒളിമ്പസ് മോൺസ് (Olympus Mons) ഏത് ഗ്രഹത്തിലാണ് സ്ഥിതി ചെയ്യുന്നത്?",
+      "answer_en": "Mars (Olympus Mons)",
+      "answer_ml": "ചൊവ്വ (ഒളിമ്പസ് മോൺസ്)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "image",
+      "a_media_url": "Giant_forest_scorpion.jpg",
+      "fact_en": "Olympus Mons is roughly two and a half times the height of Mount Everest above sea level.",
+      "fact_ml": "എവറസ്റ്റ് കൊടുമുടിയുടെ ഏതാണ്ട് മൂന്നിരട്ടി ഉയരമുള്ള കൂറ്റൻ അഗ്നിപർവ്വതമാണിത്.",
+      "qm_notes": "Accept Mars or Olympus Mons."
+    },
+    "102": {
+      "id": 102,
+      "serial": "R01-Q2",
+      "serial_no": "R01-Q2",
+      "round_id": "r1",
+      "question_en": "What is the only continent on Earth that has no native species of ants?",
+      "question_ml": "സ്വഭാവികമായി ഉറുമ്പുകളില്ലാത്ത ഭൂമിയിലെ ഒരേയൊരു ഭൂഖണ്ഡം ഏതാണ്?",
+      "answer_en": "Antarctica",
+      "answer_ml": "അന്റാർട്ടിക്ക",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "Antarctica, along with a few remote islands like Iceland and Greenland, has no native ant populations.",
+      "fact_ml": "കടുത്ത ശൈത്യം കാരണം അന്റാർട്ടിക്കയിൽ ഉറുമ്പുകൾ അതിജീവിക്കുന്നില്ല."
+    },
+    "103": {
+      "id": 103,
+      "serial": "R01-Q3",
+      "serial_no": "R01-Q3",
+      "round_id": "r1",
+      "question_en": "Which element on the periodic table was first discovered in the solar spectrum before being found on Earth?",
+      "question_ml": "ഭൂമിയിൽ കണ്ടെത്തുന്നതിന് മുൻപ് സൂര്യന്റെ പ്രകാശവർണ്ണരാജിയിൽ (Solar Spectrum) കണ്ടെത്തിയ മൂലകമേത്?",
+      "answer_en": "Helium (He)",
+      "answer_ml": "ഹീലിയം (Helium)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "Named after the Greek sun god Helios by Norman Lockyer and Edward Frankland in 1868.",
+      "fact_ml": "ഗ്രീക്ക് സൂര്യദേവനായ ഹീലിയോസിന്റെ പേരിൽ നിന്നാണ് ഹീലിയം എന്ന പേര് ലഭിച്ചത്."
+    },
+    "104": {
+      "id": 104,
+      "serial": "R01-Q4",
+      "serial_no": "R01-Q4",
+      "round_id": "r1",
+      "question_en": "What deep-sea geological formation produces rich mineral chimneys known colloquially as 'black smokers'?",
+      "question_ml": "സമുദ്രത്തിന്റെ ആഴങ്ങളിൽ കറുത്ത പുക തുപ്പുന്ന ചിമ്മിനികൾ പോലെ കാണപ്പെടുന്ന ഭൗമപ്രതിഭാസം ഏത് പേരിൽ അറിയപ്പെടുന്നു?",
+      "answer_en": "Hydrothermal Vents",
+      "answer_ml": "ഹൈഡ്രോതെർമൽ വെന്റുകൾ (Hydrothermal Vents)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "Hydrothermal vent ecosystems survive entirely on chemosynthesis driven by sulfur-oxidizing bacteria rather than sunlight.",
+      "fact_ml": "സൂര്യപ്രകാശമില്ലാതെ ബാക്ടീരിയകളുടെ കീമോസിന്തസിസ് വഴി ഊർജ്ജം കണ്ടെത്തുന്ന ആവാസവ്യവസ്ഥയാണിത്."
+    },
+    "201": {
+      "id": 201,
+      "serial": "R02-Q1",
+      "serial_no": "R02-Q1",
+      "round_id": "r2",
+      "question_en": "Examine this distinctive high-canopy flying amphibian endemic to the Western Ghats. Identify the species.",
+      "question_ml": "പശ്ചിമഘട്ടത്തിലെ മഴക്കാടുകളുടെ മുകൾത്തട്ടിൽ ജീവിക്കുന്ന ഈ അപൂർവ്വ മരത്തവളയെ തിരിച്ചറിയുക.",
+      "answer_en": "Malabar Gliding Frog (Rhacophorus malabaricus)",
+      "answer_ml": "മലബാർ പറക്കും തവള (Rhacophorus malabaricus)",
+      "q_media_type": "image",
+      "q_media_url": "Rhacophorus_malabaricus_wayanad.jpg",
+      "a_media_type": "image",
+      "a_media_url": "Rhacophorus_malabaricus_wayanad.jpg",
+      "has_visual": true,
+      "fact_en": "Features huge webbed feet that function as aerodynamic parachutes to glide from branch to branch.",
+      "fact_ml": "വിരലുകൾക്കിടയിലെ വിസ്താരമേറിയ ചർമ്മം പാരച്യൂട്ട് പോലെ ഉപയോഗിച്ച് ഇവ മരങ്ങളിൽ നിന്ന് മരങ്ങളിലേക്ക് പറക്കുന്നു."
+    },
+    "202": {
+      "id": 202,
+      "serial": "R02-Q2",
+      "serial_no": "R02-Q2",
+      "round_id": "r2",
+      "question_en": "Identify this nocturnal terrestrial predator of the evergreen leaf-litter possessing massive pedipalps and venomous stinging telson.",
+      "question_ml": "പശ്ചിമഘട്ടത്തിൽ കാണപ്പെടുന്ന ഈ കൂറ്റൻ കാട്ടുതേളിനെ തിരിച്ചറിയുക.",
+      "answer_en": "Giant Forest Scorpion (Heterometrus swammerdami)",
+      "answer_ml": "ഭീമൻ കാട്ടുതേൾ (Heterometrus)",
+      "q_media_type": "image",
+      "q_media_url": "Giant_forest_scorpion.jpg",
+      "a_media_type": "image",
+      "a_media_url": "Giant_forest_scorpion.jpg",
+      "has_visual": true,
+      "fact_en": "It is one of the world's largest living scorpion species, growing up to 23 cm in length.",
+      "fact_ml": "ലോകത്തിലെ ഏറ്റവും വലിപ്പമുള്ള തേളുകളിൽ ഒന്നാണിത്; 23 സെൻ്റീമീറ്റർ വരെ നീളം വയ്ക്കും."
+    },
+    "203": {
+      "id": 203,
+      "serial": "R02-Q3",
+      "serial_no": "R02-Q3",
+      "round_id": "r2",
+      "question_en": "Identify this endangered arboreal tarantula characterized by striking geometric patterns and brilliant metallic hues.",
+      "question_ml": "മരപ്പൊത്തുകളിൽ ജീവിക്കുന്ന ഈ അപൂർവ്വ വർണ്ണ ചിലന്തിയെ തിരിച്ചറിയുക.",
+      "answer_en": "Poecilotheria formosa (Salpinctium / Ornamental Tree Spider)",
+      "answer_ml": "പൂസിലോതീരിയ ഓർണമെന്റൽ ചിലന്തി (Poecilotheria)",
+      "q_media_type": "image",
+      "q_media_url": "Poecilotheria_formosa01.jpg",
+      "a_media_type": "image",
+      "a_media_url": "Poecilotheria_formosa01.jpg",
+      "has_visual": true,
+      "fact_en": "Poecilotheria species are agile ambush predators equipped with potent defensive venom.",
+      "fact_ml": "ഇന്ത്യയിലും ശ്രീലങ്കയിലും മാത്രം കാണപ്പെടുന്ന മരങ്ങളിൽ ജീവിക്കുന്ന വിഷച്ചിലന്തികളാണിവ."
+    },
+    "204": {
+      "id": 204,
+      "serial": "R02-Q4",
+      "serial_no": "R02-Q4",
+      "round_id": "r2",
+      "question_en": "Identify this endemic rainforest gastropod of Wayanad adorned with an amber, translucent spiral shell.",
+      "question_ml": "വയനാടൻ ചോലക്കാടുകളിൽ കാണപ്പെടുന്ന ഈ തദ്ദേശീയ ഒച്ചിനത്തെ തിരിച്ചറിയുക.",
+      "answer_en": "Wayanad Forest Snail",
+      "answer_ml": "വയനാടൻ കാട്ടു ഒച്ച് (Wayanad Forest Snail)",
+      "q_media_type": "image",
+      "q_media_url": "SnailWynaad.jpg",
+      "a_media_type": "image",
+      "a_media_url": "SnailWynaad.jpg",
+      "has_visual": true,
+      "fact_en": "Land snails play an invaluable ecological role recycling leaf litter calcium in tropical rainforests.",
+      "fact_ml": "മഴക്കാടുകളിലെ കാൽസ്യം ചംക്രമണത്തിലും ജൈവാവശിഷ്ടങ്ങൾ വിഘടിപ്പിക്കുന്നതിലും പ്രധാന പങ്ക് വഹിക്കുന്നു."
+    },
+    "301": {
+      "id": 301,
+      "serial": "R03-Q1",
+      "serial_no": "R03-Q1",
+      "round_id": "r3",
+      "question_en": "Listen closely to this distinctive, booming two-note territorial call echoing through the high canopy. Identify this bird.",
+      "question_ml": "മഴക്കാടുകളിൽ മുഴങ്ങിക്കേൾക്കുന്ന ഈ പ്രഭാത ശബ്ദം ഏത് പക്ഷിയുടേതാണ്? ശബ്ദം കേട്ട് തിരിച്ചറിയുക.",
+      "answer_en": "Indian Pitta (Pitta brachyura / കാവിപ്പക്ഷി)",
+      "answer_ml": "കാവിപ്പക്ഷി (Indian Pitta)",
+      "q_media_type": "audio",
+      "q_media_url": "assets/audio/pitta.mp3",
+      "a_media_type": "image",
+      "a_media_url": "assets/images/indian_pitta.jpg",
+      "has_audio": true,
+      "fact_en": "Known in Malayalam as the 'Kaavi bird' or 'Six o'clock bird' due to its punctual dawn and dusk calling.",
+      "fact_ml": "പ്രഭാതത്തിലും സന്ധ്യക്കും കൃത്യസമയത്ത് ശബ്ദമുണ്ടാക്കുന്നതിനാൽ 'ആറുമണിപ്പക്ഷി' എന്നും വിളിക്കുന്നു."
+    },
+    "302": {
+      "id": 302,
+      "serial": "R03-Q2",
+      "serial_no": "R03-Q2",
+      "round_id": "r3",
+      "question_en": "Listen to this reverberating, deep roaring vocalization that shakes the forest floor at dawn. Identify the animal.",
+      "question_ml": "വനത്തെ വിറപ്പിക്കുന്ന ഈ ഗർജ്ജനം ഏത് മൃഗത്തിന്റേതാണ്? ശബ്ദം കേട്ട് കണ്ടെത്തുക.",
+      "answer_en": "Bengal Tiger (Panthera tigris)",
+      "answer_ml": "കടുവ (Bengal Tiger)",
+      "q_media_type": "audio",
+      "q_media_url": "assets/audio/tiger.mp3",
+      "a_media_type": "image",
+      "a_media_url": "assets/images/tiger.jpg",
+      "has_audio": true,
+      "fact_en": "A tiger's roar contains low-frequency infrasound that can paralyze prey and travel over 3 kilometers.",
+      "fact_ml": "കടുവയുടെ ഗർജ്ജനം 3 കിലോമീറ്ററിലധികം ദൂരത്തേക്ക് കേൾക്കാൻ സാധിക്കും."
+    },
+    "401": {
+      "id": 401,
+      "serial": "R04-Q1",
+      "serial_no": "R04-Q1",
+      "round_id": "r4",
+      "question_en": "Watch this educational video clip highlighting deep space exploration. What landmark space mission is being portrayed?",
+      "question_ml": "ബഹിരാകാശ പര്യവേക്ഷണത്തെക്കുറിച്ചുള്ള ഈ ഹ്രസ്വ വീഡിയോ ക്ലിപ്പ് കാണുക. ഏത് ദൗത്യത്തെക്കുറിച്ചാണ് ഈ വിവരണം?",
+      "answer_en": "Voyager Golden Record / Deep Space Exploration",
+      "answer_ml": "വോയേജർ ഗോൾഡൻ റെക്കോർഡ് ദൗത്യം (Voyager Mission)",
+      "q_media_type": "youtube",
+      "q_media_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "q_media_yt_start": 0,
+      "q_media_yt_end": 20,
+      "a_media_type": "youtube",
+      "a_media_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "a_media_yt_start": 20,
+      "a_media_yt_end": 45,
+      "fact_en": "The Voyager probes carry a phonograph record containing sounds and images selected to portray the diversity of life on Earth.",
+      "fact_ml": "ഭൂമിയിലെ സംസ്കാരങ്ങളും ശബ്ദങ്ങളും അടങ്ങിയ സുവർണ്ണ ഫലകം വോയേജർ പേടകത്തിൽ ഉൾപ്പെടുത്തിയിട്ടുണ്ട്."
+    },
+    "402": {
+      "id": 402,
+      "serial": "R04-Q2",
+      "serial_no": "R04-Q2",
+      "round_id": "r4",
+      "question_en": "Watch this motion capture video of an agile rainforest predator traversing slippery wet stones. Identify the predator genus.",
+      "question_ml": "ഈ വീഡിയോ ക്ലിപ്പിൽ കാണുന്ന ജീവിയുടെ കുടുംബമോ വർഗ്ഗമോ ഏതെന്ന് വ്യക്തമാക്കുക.",
+      "answer_en": "Otter / നീർനായ (Lutrogale perspicillata)",
+      "answer_ml": "നീർനായ (Smooth-coated Otter)",
+      "q_media_type": "video",
+      "q_media_url": "assets/videos/sample_nature.mp4",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "Otters possess extraordinarily dense water-repellent fur that traps a layer of air to keep them dry and warm underwater.",
+      "fact_ml": "നീർനായകൾക്ക് വെള്ളം കയറാത്ത കട്ടിയുള്ള രോമക്കുപ്പായമുണ്ട്, ഇത് തണുപ്പിൽ നിന്നും അവയെ സംരക്ഷിക്കുന്നു."
+    },
+    "501": {
+      "id": 501,
+      "serial": "R05-Q1",
+      "serial_no": "R05-Q1",
+      "round_id": "r5",
+      "question_en": "Clue Hunter Challenge: Follow the trail of 3 progressive ecological clues to unveil this keystone organism.",
+      "question_ml": "ക്ലൂ ഹണ്ടർ: താഴെ നൽകുന്ന 3 സൂചനകളിൽ നിന്ന് ജീവിയെ കണ്ടെത്തുക.",
+      "clues": [
+        {
+          "pts": 15,
+          "clue_en": "Clue 1 (+15 Pts): It forms strict obligate mutualisms with microscopic pollinator wasps that complete their entire lifecycle inside its inverted syconium flowers.",
+          "clue_ml": "സൂചന 1 (+15 മാർക്ക്): ഇവയുടെ പൂങ്കുലയ്ക്കുള്ളിൽ മാത്രം ജീവിതചക്രം പൂർത്തിയാക്കുന്ന സൂക്ഷ്മ കടന്നലുകളുമായി (Fig wasps) ജീവത്ബന്ധത്തിൽ ഏർപ്പെടുന്നു."
+        },
+        {
+          "pts": 10,
+          "clue_en": "Clue 2 (+10 Pts): Often starting life as an epiphyte upon a host tree before sending strangling aerial roots down to smother the host trunk.",
+          "clue_ml": "സൂചന 2 (+10 മാർക്ക്): പലപ്പോഴും മറ്റ് മരങ്ങളുടെ ശാഖകളിൽ കിളിർത്ത്, താഴേക്ക് വേരുകളയച്ച് ആതിഥേയ മരത്തെ വരിഞ്ഞുമുറുക്കി വളരുന്ന സ്വഭാവമുണ്ട്."
+        },
+        {
+          "pts": 5,
+          "clue_en": "Clue 3 (+5 Pts): Revered across tropical forests as an indispensable keystone food source, its genus includes the sacred Peepal and Banyan.",
+          "clue_ml": "സൂചന 3 (+5 മാർക്ക്): അരയാലും പേരാലും ഉൾപ്പെടുന്ന, പഴങ്ങൾ കാട്ടിലെ പക്ഷികൾക്കും മൃഗങ്ങൾക്കും ഭക്ഷണമാകുന്ന ആൽമര കുടുംബമേത്?"
+        }
+      ],
+      "answer_en": "Ficus (Fig trees / അത്തി, അരയാൽ, പേരാൽ)",
+      "answer_ml": "ആൽമരങ്ങൾ / അത്തി വർഗ്ഗം (Ficus)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "image",
+      "a_media_url": "assets/images/ficus.jpg",
+      "fact_en": "Ficus species provide critical sustenance during lean seasons when other fruiting trees are barren.",
+      "fact_ml": "മറ്റു മരങ്ങളിൽ കായ്കളില്ലാത്ത കാലത്തും കായ്ക്കുന്നതിനാൽ വനത്തിലെ ജീവികൾക്ക് ഇത് ജീവരക്ഷാ വൃക്ഷമാണ്."
+    },
+    "502": {
+      "id": 502,
+      "serial": "R05-Q2",
+      "serial_no": "R05-Q2",
+      "round_id": "r5",
+      "question_en": "Clue Hunter Challenge: Identify this enigmatic creature from the three morphological and ecological clues.",
+      "question_ml": "ക്ലൂ ഹണ്ടർ: ഈ മൂന്ന് സൂചനകളിൽ നിന്ന് രഹസ്യ ജീവിയെ കണ്ടെത്തുക.",
+      "clues": [
+        {
+          "pts": 15,
+          "clue_en": "Clue 1 (+15 Pts): Discovered as a living fossil in Kerala in 2003, having diverged from Seychelles sooglossids over 130 million years ago.",
+          "clue_ml": "സൂചന 1 (+15 മാർക്ക്): 2003-ൽ ഇടുക്കിയിൽ നിന്ന് കണ്ടെത്തിയ ജീവത്ഫോസിൽ; സീഷെൽസിലെ തവളകളുമായി 130 ദശലക്ഷം വർഷങ്ങൾക്ക് മുൻപ് വഴിപിരിഞ്ഞ പാരമ്പര്യം."
+        },
+        {
+          "pts": 10,
+          "clue_en": "Clue 2 (+10 Pts): Spends almost its entire life burrowed subterraneanly up to 3 meters deep feeding on underground termites.",
+          "clue_ml": "സൂചന 2 (+10 മാർക്ക്): വർഷത്തിൽ ഭൂരിഭാഗവും മണ്ണിനടിയിൽ ചിതലുകളെ ഭക്ഷിച്ചു കഴിയുന്ന അപൂർവ്വ ജീവി."
+        },
+        {
+          "pts": 5,
+          "clue_en": "Clue 3 (+5 Pts): Characterized by a bloated dark-purple body, pointed snout, and emerges only for one week during monsoon rains to breed.",
+          "clue_ml": "സൂചന 3 (+5 മാർക്ക്): കൂർത്ത മൂക്കും തടിച്ച പർപ്പിൾ നിറവുമുള്ള, വർഷകാലത്ത് ഒരാഴ്ച മാത്രം ഇണചേരാൻ പുറത്തുവരുന്ന മാവേലിത്തവള ഏത്?"
+        }
+      ],
+      "answer_en": "Purple Frog (Nasikabatrachus sahyadrensis / പാതാളത്തവള)",
+      "answer_ml": "പാതാളത്തവള / മാവേലിത്തവള (Nasikabatrachus sahyadrensis)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "image",
+      "a_media_url": "assets/images/purple_frog.jpg",
+      "fact_en": "It was hailed as one of the most remarkable zoological discoveries of the 21st century.",
+      "fact_ml": "ഇരുപത്തൊന്നാം നൂറ്റാണ്ടിലെ ഏറ്റവും വിസ്മയകരമായ ജീവശാസ്ത്ര കണ്ടെത്തലുകളിൽ ഒന്നാണിത്."
+    },
+    "601": {
+      "id": 601,
+      "serial": "R06-Q1",
+      "serial_no": "R06-Q1",
+      "round_id": "r6",
+      "question_en": "Rapid Fire Buzzer: Which Indian state was the first to declare an official State Butterfly (the Malabar Banded Peacock)?",
+      "question_ml": "ബസ്സർ ചോദ്യം: ഇന്ത്യയിൽ ആദ്യമായി ഔദ്യോഗിക സംസ്ഥാന ശലഭത്തെ (ബുദ്ധമയൂരി) പ്രഖ്യാപിച്ച സംസ്ഥാനം ഏതാണ്?",
+      "answer_en": "Maharashtra (Blue Mormon in 2015 - Note: Kerala declared Malabar Banded Peacock in 2018)",
+      "answer_ml": "മഹാരാഷ്ട്ര (2015-ൽ ബ്ലൂ മോർമോൺ; കേരളം 2018-ൽ ബുദ്ധമയൂരിയെ പ്രഖ്യാപിച്ചു)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "Maharashtra made history in 2015 becoming the first state in India to adopt an official butterfly symbol.",
+      "fact_ml": "ഇന്ത്യയിൽ ഔദ്യോഗിക ചിത്രശലഭത്തെ തിരഞ്ഞെടുത്ത ആദ്യ സംസ്ഥാനം മഹാരാഷ്ട്രയാണ്."
+    },
+    "602": {
+      "id": 602,
+      "serial": "R06-Q2",
+      "serial_no": "R06-Q2",
+      "round_id": "r6",
+      "question_en": "Rapid Fire Buzzer: What is the collective term used for a group of flamingos?",
+      "question_ml": "ബസ്സർ ചോദ്യം: അരയന്നക്കൊക്കുകളുടെ (Flamingos) കൂട്ടത്തെ വിളിക്കുന്ന ഇംഗ്ലീഷ് കൂട്ടപ്പേര് (Collective Noun) എന്താണ്?",
+      "answer_en": "A Flamboyance (or Stand)",
+      "answer_ml": "ഫ്ലാംബോയൻസ് (A Flamboyance)",
+      "q_media_type": "none",
+      "q_media_url": "",
+      "a_media_type": "none",
+      "a_media_url": "",
+      "fact_en": "A gathering of flamingos is famously dubbed a 'flamboyance' owing to their vibrant plumage.",
+      "fact_ml": "അരയന്നക്കൊക്കുകളുടെ ചുവപ്പും പിങ്കും കലർന്ന നിറമാണ് 'ഫ്ലാംബോയൻസ്' എന്ന പേരിന് കാരണം."
+    }
+  }
+};

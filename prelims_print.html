@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Written Prelims Question Paper — The Sahyadri Wildlife Quiz 2026 (High School)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================================
+           A4 PROFESSIONAL EXAMINATION PRINT STYLESHEET
+           STRICT SPECIFICATION: Exactly 20 Questions across Exactly 2 Pages (1 Sheet Front/Back)
+           Page 1: Questions 1 to 10 (2 columns × 5 rows)
+           Page 2: Questions 11 to 20 (2 columns × 5 rows)
+           ===================================================================== */
+        
+        @page {
+            size: A4 portrait;
+            margin: 6mm 8mm 6mm 8mm;
+        }
+
+        :root {
+            --text-dark: #0f172a;
+            --text-muted: #334155;
+            --text-ml: #1e293b;
+            --border-color: #cbd5e1;
+            --header-bg: #f8fafc;
+            --accent-green: #065f46;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-dark);
+            font-size: 7.7pt;
+            line-height: 1.20;
+        }
+
+        /* Non-printing Floating Action Toolbar */
+        .print-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            font-family: 'Inter', sans-serif;
+        }
+        .print-toolbar-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-print {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s;
+        }
+        .btn-print:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.6);
+        }
+        .toolbar-select, .toolbar-btn {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .toolbar-btn:hover, .toolbar-select:hover {
+            background: #334155;
+        }
+
+        /* A4 Page Container */
+        .page-sheet {
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            margin: 15px auto;
+            background: #ffffff;
+            padding: 6mm 9mm 7mm 9mm;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* Top Header - Compact & Elegant */
+        .exam-header {
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 2px;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        .exam-subhead {
+            font-size: 6.8pt;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin: 0;
+        }
+        .exam-title {
+            font-family: 'Cinzel', serif;
+            font-size: 12pt;
+            font-weight: 800;
+            margin: 1px 0;
+            color: #0f172a;
+            letter-spacing: 0.5px;
+        }
+        .exam-subtitle {
+            font-size: 7.8pt;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 1px 0;
+        }
+
+        /* Candidate Details Strip - NO Chest No (Consolidated 3 fields) */
+        .candidate-strip {
+            display: grid;
+            grid-template-columns: 3fr 3fr 1.2fr;
+            border: 1px solid var(--border-color);
+            background: var(--header-bg);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 7.4pt;
+            margin-bottom: 3px;
+            gap: 12px;
+        }
+        .candidate-field {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .candidate-label {
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 6.8pt;
+            white-space: nowrap;
+        }
+        .candidate-line {
+            flex-grow: 1;
+            border-bottom: 1px dotted #94a3b8;
+            height: 12px;
+        }
+
+        /* Instructions Bar - Ultra Compact */
+        .instructions-bar {
+            background: #f1f5f9;
+            border-left: 3px solid var(--accent-green);
+            padding: 2px 8px;
+            font-size: 6.8pt;
+            color: #334155;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 2-Column Question Grid (5 Questions per column = 10 per page) */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 12px;
+            flex-grow: 1;
+            align-content: stretch;
+        }
+
+        /* Question Item Card */
+        .q-card {
+            border-bottom: 1px dotted #cbd5e1;
+            padding-bottom: 2px;
+            margin-bottom: 1px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.5px;
+        }
+        .q-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5px;
+        }
+        .q-header {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .q-num {
+            font-weight: 800;
+            font-size: 8.2pt;
+            color: #0f172a;
+            min-width: 16px;
+        }
+        .q-serial {
+            font-size: 6.2pt;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #334155;
+            padding: 0.5px 3.5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .q-text-en {
+            margin: 0;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 7.7pt;
+            line-height: 1.18;
+        }
+        .q-text-ml {
+            margin: 0;
+            font-family: 'Manjari', sans-serif;
+            color: var(--text-ml);
+            font-size: 7.4pt;
+            line-height: 1.20;
+            font-weight: 700;
+        }
+        
+        /* Dedicated, generous write-in answer box */
+        .q-answer-box {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-top: 2px;
+            padding-top: 1px;
+        }
+        .q-ans-label {
+            font-size: 6.8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            white-space: nowrap;
+        }
+        .q-ans-line {
+            flex-grow: 1;
+            border-bottom: 1.5px dotted #64748b;
+            height: 12px;
+        }
+        .q-key-ans {
+            display: none;
+            background: #f0fdf4;
+            border-left: 2px solid #16a34a;
+            padding: 2px 6px;
+            font-size: 7.2pt;
+            font-weight: 700;
+            color: #166534;
+            margin-top: 1px;
+        }
+
+        /* Show Answers in Answer Key Mode */
+        body.mode-key .q-key-ans {
+            display: block;
+        }
+        body.mode-key .q-ans-line {
+            display: none;
+        }
+        body.mode-key .q-ans-label {
+            display: none;
+        }
+
+        /* Language Toggle Filters */
+        body.lang-en .q-text-ml {
+            display: none !important;
+        }
+        body.lang-ml .q-text-en {
+            display: none !important;
+        }
+
+        /* Footer */
+        .exam-footer {
+            border-top: 1px solid #cbd5e1;
+            padding-top: 2px;
+            margin-top: 2px;
+            font-size: 6.6pt;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* =====================================================================
+           PRINT MEDIA QUERIES (Guaranteed Exactly 2-Page Fit)
+           ===================================================================== */
+        @media print {
+            body {
+                background: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .print-toolbar {
+                display: none !important;
+            }
+            .page-sheet {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 5mm 8mm 6mm 8mm !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: 100vh !important;
+                height: 100vh !important;
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+            .page-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="mode-student lang-bilingual">
+
+    <!-- Non-printing Interactive Toolbar -->
+    <div class="print-toolbar">
+        <div class="print-toolbar-group">
+            <button class="btn-print" onclick="window.print()">
+                🖨️ Print / Save as PDF (A4)
+            </button>
+            <span style="font-size: 0.85rem; color: #94a3b8;">Format: <strong>Exactly 20 Questions on 2 Pages (1 Sheet Front/Back)</strong></span>
+        </div>
+
+        <div class="print-toolbar-group">
+            <label style="font-size: 0.82rem; color: #cbd5e1;">View Mode:</label>
+            <select class="toolbar-select" id="modeSelect" onchange="setPrintMode(this.value)">
+                <option value="student">📝 Student Question Paper (with answer lines)</option>
+                <option value="key">🔑 Quizmaster Master Key (with answers)</option>
+            </select>
+
+            <label style="font-size: 0.82rem; color: #cbd5e1; margin-left: 8px;">Language:</label>
+            <select class="toolbar-select" id="langSelect" onchange="setLanguage(this.value)">
+                <option value="bilingual">🌐 Bilingual (English + മലയാളം)</option>
+                <option value="en">🇬🇧 English Only</option>
+                <option value="ml">🇮🇳 മലയാളം Only</option>
+            </select>
+
+            <button class="toolbar-btn" onclick="adjustFontSize(-0.3)" title="Decrease font size">A-</button>
+            <button class="toolbar-btn" onclick="adjustFontSize(0.3)" title="Increase font size">A+</button>
+            <button class="toolbar-btn" onclick="window.close()" title="Close Print View">✕ Close</button>
+        </div>
+    </div>
+
+    <!-- Container for dynamic generation -->
+    <div id="pagesContainer"></div>
+
+    <script src="js/quiz_data.js"></script>
+    <script>
+        function setPrintMode(mode) {
+            document.body.classList.remove('mode-student', 'mode-key');
+            document.body.classList.add('mode-' + mode);
+        }
+
+        function setLanguage(lang) {
+            document.body.classList.remove('lang-bilingual', 'lang-en', 'lang-ml');
+            document.body.classList.add('lang-' + lang);
+        }
+
+        let currentFontSize = 7.7;
+        function adjustFontSize(delta) {
+            currentFontSize = Math.max(6.5, Math.min(10.5, currentFontSize + delta));
+            document.body.style.fontSize = currentFontSize + 'pt';
+        }
+
+        function renderExamPaper() {
+            const container = document.getElementById('pagesContainer');
+            // Strict filter: only non-tiebreaker questions (Questions 1 to 20)
+            const prelims = (QUIZ_DATA.prelims || []).filter(q => !q.is_tiebreaker).slice(0, 20);
+            
+            // Exactly 10 questions per page: Page 1 = Q1-Q10, Page 2 = Q11-Q20
+            const splitIndex = 10;
+            const page1Questions = prelims.slice(0, splitIndex);
+            const page2Questions = prelims.slice(splitIndex);
+
+            const renderCard = (q, index) => `
+                <div class="q-card">
+                    <div class="q-content">
+                        <div class="q-header">
+                            <span class="q-num">${q.num || index + 1}.</span>
+                            <span class="q-serial">${q.serial || q.serial_no || 'P' + String(index+1).padStart(2,'0')}</span>
+                        </div>
+                        <p class="q-text-en">${q.question_en || q.prompt_en || ''}</p>
+                        <p class="q-text-ml">${q.question_ml || q.prompt_ml || ''}</p>
+                    </div>
+                    <div class="q-answer-box">
+                        <span class="q-ans-label">Ans / ഉത്തരം:</span>
+                        <div class="q-ans-line"></div>
+                    </div>
+                    <div class="q-key-ans">
+                        ✓ Ans: ${q.answer_en || ''} <span style="font-family: 'Manjari';">(${q.answer_ml || ''})</span>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <!-- =================== PAGE 1 (Front Side: Questions 1 to 10) =================== -->
+                <div class="page-sheet">
+                    <div>
+                        <!-- Header with College & Botany Logos -->
+                        <div class="exam-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <img src="assets/branding/gvc_college_emblem_512.png" style="height: 44px; width: 44px; object-fit: contain;" alt="GVC Emblem" />
+                            <div style="flex: 1; text-align: center;">
+                                <p class="exam-subhead" style="margin: 0; font-size: 7.2pt; font-weight: 700; color: #065f46; text-transform: uppercase;">Government Victoria College, Palakkad • Department of Botany</p>
+                                <h1 class="exam-title" style="margin: 1px 0; font-size: 11pt;">The Sahyadri Wildlife Quiz 2026</h1>
+                                <p class="exam-subtitle" style="margin: 0; font-size: 6.8pt;">Wildlife Week Celebrations 2026 — Written Screening Preliminary Examination</p>
+                            </div>
+                            <img src="assets/branding/gvc_botany_logo.png" style="height: 44px; width: 44px; object-fit: contain;" alt="Botany Logo" />
+                        </div>
+
+                        <!-- Candidate Strip (No Chest No) -->
+                        <div class="candidate-strip">
+                            <div class="candidate-field">
+                                <span class="candidate-label">Team Name:</span>
+                                <div class="candidate-line"></div>
+                            </div>
+                            <div class="candidate-field">
+                                <span class="candidate-label">School / Institution:</span>
+                                <div class="candidate-line"></div>
+                            </div>
+                            <div class="candidate-field">
+                                <span class="candidate-label">Score:</span>
+                                <div class="candidate-line" style="border-bottom-style: solid;"></div>
+                                <span style="font-size: 7.2pt; color: #475569; font-weight: 700;">/ 20</span>
+                            </div>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="instructions-bar">
+                            <span>⏱️ <strong>Time:</strong> 20 Minutes | <strong>Max Marks:</strong> 20 (1 mark per question) | <strong>Negative Marks:</strong> None</span>
+                            <span>✍️ Write your answer legibly on the dotted line for each question</span>
+                        </div>
+
+                        <!-- Questions 1 to 10 (2 Columns × 5 Rows) -->
+                        <div class="questions-grid">
+                            ${page1Questions.map((q, idx) => renderCard(q, idx)).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Page 1 Footer -->
+                    <div class="exam-footer">
+                        <span>The Sahyadri Wildlife Quiz 2026 • Written Prelims</span>
+                        <span style="font-weight: 700;">Page 1 of 2 — (Please Turn Over for Questions 11 to 20 👉)</span>
+                        <span>Official Examination Paper</span>
+                    </div>
+                </div>
+
+                <!-- =================== PAGE 2 (Back Side: Questions 11 to 20) =================== -->
+                <div class="page-sheet">
+                    <div>
+                        <!-- Compact Header on Page 2 -->
+                        <div class="exam-header" style="padding-bottom: 2px; margin-bottom: 3px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                <span style="font-family: 'Cinzel', serif; font-weight: 800; font-size: 9pt; color: #0f172a;">The Sahyadri Wildlife Quiz 2026</span>
+                                <span style="font-size: 7.2pt; font-weight: 700; color: var(--accent-green);">Written Prelims — Section B (Questions 11 to 20)</span>
+                                <span style="font-size: 7.2pt; color: #64748b;">High School & Higher Secondary Category</span>
+                            </div>
+                        </div>
+
+                        <!-- Questions 11 to 20 (2 Columns × 5 Rows) -->
+                        <div class="questions-grid">
+                            ${page2Questions.map((q, idx) => renderCard(q, splitIndex + idx)).join('')}
+                        </div>
+
+                        <!-- Tie-Breaker Notice -->
+                        <div style="margin-top: 3px; padding: 3px 6px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 4px; font-size: 6.8pt; color: #475569; text-align: center;">
+                            🏁 <strong>End of Question Paper</strong> (Total 20 Questions) • In case of tied scores, designated tie-breaker questions will be displayed on-screen by the Quizmaster.
+                        </div>
+                    </div>
+
+                    <!-- Page 2 Footer -->
+                    <div class="exam-footer">
+                        <span>Kerala Wildlife Week 2026 • High School & Higher Secondary Category Written Prelims</span>
+                        <span style="font-weight: 700;">Page 2 of 2 — (End of Paper)</span>
+                        <span>Verified by Quiz Evaluation Committee</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.addEventListener('DOMContentLoaded', renderExamPaper);
+    </script>
+</body>
+</html>
