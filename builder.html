@@ -290,9 +290,16 @@
 
                         <div id="qMediaFields" style="margin-top: 0.75rem; display: none;">
                             <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
-                                <div class="form-group">
-                                    <label class="form-label" for="qMediaSrc">Media URL / File Path / YouTube URL</label>
-                                    <input type="text" id="qMediaSrc" class="form-input" placeholder="e.g. assets/images/flower.jpg or https://youtu.be/xxx">
+                                <div class="form-group" style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <label class="form-label" for="qMediaSrc" style="margin: 0;">Media URL / Local PC File / YouTube URL</label>
+                                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadQMedia" style="padding: 2px 8px; font-size: 0.76rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; font-weight: 600;" title="Choose local image or audio from this PC">📁 Choose from PC</button>
+                                            <button type="button" class="btn btn-sm" id="btnClearQMedia" style="padding: 2px 7px; font-size: 0.74rem; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5;" title="Clear Media">✕ Clear</button>
+                                            <input type="file" id="fileQMediaUpload" accept="image/*,audio/*,video/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <input type="text" id="qMediaSrc" class="form-input" placeholder="e.g. data:... or local file or https://youtu.be/xxx">
                                 </div>
                                 <div class="form-group yt-only-field" style="display:none; width: 100px;">
                                     <label class="form-label" for="qMediaYtStart">Start (Sec)</label>
@@ -337,9 +344,16 @@
 
                         <div id="aMediaFields" style="margin-top: 0.75rem; display: none;">
                             <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
-                                <div class="form-group">
-                                    <label class="form-label" for="aMediaSrc">Answer Media URL / File Path / YouTube URL</label>
-                                    <input type="text" id="aMediaSrc" class="form-input" placeholder="e.g. assets/images/full_photo.jpg">
+                                <div class="form-group" style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <label class="form-label" for="aMediaSrc" style="margin: 0;">Answer Media URL / Local PC File / YouTube URL</label>
+                                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadAMedia" style="padding: 2px 8px; font-size: 0.76rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; font-weight: 600;" title="Choose local image or audio from this PC">📁 Choose from PC</button>
+                                            <button type="button" class="btn btn-sm" id="btnClearAMedia" style="padding: 2px 7px; font-size: 0.74rem; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5;" title="Clear Media">✕ Clear</button>
+                                            <input type="file" id="fileAMediaUpload" accept="image/*,audio/*,video/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <input type="text" id="aMediaSrc" class="form-input" placeholder="e.g. data:... or local file or https://youtu.be/xxx">
                                 </div>
                                 <div class="form-group a-yt-only-field" style="display:none; width: 100px;">
                                     <label class="form-label" for="aMediaYtStart">Start (Sec)</label>
@@ -499,9 +513,16 @@
 
                         <div id="pQMediaFields" style="margin-top: 0.75rem; display: none;">
                             <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
-                                <div class="form-group">
-                                    <label class="form-label" for="pQMediaSrc">Question Media URL or File Path</label>
-                                    <input type="text" id="pQMediaSrc" class="form-input" placeholder="e.g. assets/images/prelim_q1.jpg">
+                                <div class="form-group" style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <label class="form-label" for="pQMediaSrc" style="margin: 0;">Question Media URL / Local PC File / YouTube URL</label>
+                                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadPQMedia" style="padding: 2px 8px; font-size: 0.76rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; font-weight: 600;" title="Choose local image or audio from this PC">📁 Choose from PC</button>
+                                            <button type="button" class="btn btn-sm" id="btnClearPQMedia" style="padding: 2px 7px; font-size: 0.74rem; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5;" title="Clear Media">✕ Clear</button>
+                                            <input type="file" id="filePQMediaUpload" accept="image/*,audio/*,video/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <input type="text" id="pQMediaSrc" class="form-input" placeholder="e.g. data:... or local file or https://youtu.be/xxx">
                                 </div>
                                 <div class="form-group p-q-yt-only" style="display:none; width: 100px;">
                                     <label class="form-label" for="pQMediaYtStart">Start (Sec)</label>
@@ -546,9 +567,16 @@
 
                         <div id="pAMediaFields" style="margin-top: 0.75rem; display: none;">
                             <div class="form-grid" style="grid-template-columns: 1fr auto auto;">
-                                <div class="form-group">
-                                    <label class="form-label" for="pAMediaSrc">Answer Media URL or File Path</label>
-                                    <input type="text" id="pAMediaSrc" class="form-input" placeholder="e.g. assets/images/prelim_ans1.jpg">
+                                <div class="form-group" style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <label class="form-label" for="pAMediaSrc" style="margin: 0;">Answer Media URL / Local PC File / YouTube URL</label>
+                                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                            <button type="button" class="btn btn-sm btn-secondary" id="btnUploadPAMedia" style="padding: 2px 8px; font-size: 0.76rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; font-weight: 600;" title="Choose local image or audio from this PC">📁 Choose from PC</button>
+                                            <button type="button" class="btn btn-sm" id="btnClearPAMedia" style="padding: 2px 7px; font-size: 0.74rem; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5;" title="Clear Media">✕ Clear</button>
+                                            <input type="file" id="filePAMediaUpload" accept="image/*,audio/*,video/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <input type="text" id="pAMediaSrc" class="form-input" placeholder="e.g. data:... or local file or https://youtu.be/xxx">
                                 </div>
                                 <div class="form-group p-a-yt-only" style="display:none; width: 100px;">
                                     <label class="form-label" for="pAMediaYtStart">Start (Sec)</label>
@@ -592,6 +620,6 @@
     <script src="js/media_player.js"></script>
     <script src="js/quiz_data.js"></script>
     <script src="js/quiz_state.js"></script>
-    <script src="js/builder_app.js?v=70"></script>
+    <script src="js/builder_app.js?v=71"></script>
 </body>
 </html>

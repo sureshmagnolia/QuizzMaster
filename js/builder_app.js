@@ -88,6 +88,9 @@
         elements.qMediaType = document.getElementById('qMediaType');
         elements.qMediaFields = document.getElementById('qMediaFields');
         elements.qMediaSrc = document.getElementById('qMediaSrc');
+        elements.btnUploadQMedia = document.getElementById('btnUploadQMedia');
+        elements.fileQMediaUpload = document.getElementById('fileQMediaUpload');
+        elements.btnClearQMedia = document.getElementById('btnClearQMedia');
         elements.qMediaYtStart = document.getElementById('qMediaYtStart');
         elements.qMediaYtEnd = document.getElementById('qMediaYtEnd');
         elements.qMediaPreview = document.getElementById('qMediaPreview');
@@ -97,6 +100,9 @@
         elements.aMediaType = document.getElementById('aMediaType');
         elements.aMediaFields = document.getElementById('aMediaFields');
         elements.aMediaSrc = document.getElementById('aMediaSrc');
+        elements.btnUploadAMedia = document.getElementById('btnUploadAMedia');
+        elements.fileAMediaUpload = document.getElementById('fileAMediaUpload');
+        elements.btnClearAMedia = document.getElementById('btnClearAMedia');
         elements.aMediaYtStart = document.getElementById('aMediaYtStart');
         elements.aMediaYtEnd = document.getElementById('aMediaYtEnd');
         elements.aMediaPreview = document.getElementById('aMediaPreview');
@@ -133,6 +139,9 @@
         elements.pQMediaType = document.getElementById('pQMediaType');
         elements.pQMediaFields = document.getElementById('pQMediaFields');
         elements.pQMediaSrc = document.getElementById('pQMediaSrc');
+        elements.btnUploadPQMedia = document.getElementById('btnUploadPQMedia');
+        elements.filePQMediaUpload = document.getElementById('filePQMediaUpload');
+        elements.btnClearPQMedia = document.getElementById('btnClearPQMedia');
         elements.pQMediaYtStart = document.getElementById('pQMediaYtStart');
         elements.pQMediaYtEnd = document.getElementById('pQMediaYtEnd');
         elements.pQMediaPreview = document.getElementById('pQMediaPreview');
@@ -142,6 +151,9 @@
         elements.pAMediaType = document.getElementById('pAMediaType');
         elements.pAMediaFields = document.getElementById('pAMediaFields');
         elements.pAMediaSrc = document.getElementById('pAMediaSrc');
+        elements.btnUploadPAMedia = document.getElementById('btnUploadPAMedia');
+        elements.filePAMediaUpload = document.getElementById('filePAMediaUpload');
+        elements.btnClearPAMedia = document.getElementById('btnClearPAMedia');
         elements.pAMediaYtStart = document.getElementById('pAMediaYtStart');
         elements.pAMediaYtEnd = document.getElementById('pAMediaYtEnd');
         elements.pAMediaPreview = document.getElementById('pAMediaPreview');
@@ -379,6 +391,101 @@
         elements.qMediaSrc.addEventListener('change', () => renderMediaPreview('q'));
         elements.aMediaSrc.addEventListener('change', () => renderMediaPreview('a'));
 
+        // Local PC File Picker & Drag-and-Drop Binding Helper
+        function bindMediaPicker(btn, fileInput, textInput, selectType, previewFn, clearBtn) {
+            if (btn && fileInput) {
+                btn.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+
+                    let detectedType = 'image';
+                    if (file.type.startsWith('audio/')) detectedType = 'audio';
+                    else if (file.type.startsWith('video/')) detectedType = 'video';
+                    else if (file.type.startsWith('image/')) detectedType = 'image';
+
+                    if (selectType) {
+                        selectType.value = detectedType;
+                        selectType.dispatchEvent(new Event('change'));
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        textInput.value = event.target.result;
+                        textInput.dispatchEvent(new Event('input'));
+                        textInput.dispatchEvent(new Event('change'));
+                        if (previewFn) previewFn();
+                        showToast(`📁 Loaded local ${file.name} (${(file.size / 1024).toFixed(1)} KB) directly into this slot!`);
+                    };
+                    reader.readAsDataURL(file);
+                    fileInput.value = '';
+                });
+            }
+
+            if (clearBtn && textInput) {
+                clearBtn.addEventListener('click', () => {
+                    textInput.value = '';
+                    if (selectType) {
+                        selectType.value = 'none';
+                        selectType.dispatchEvent(new Event('change'));
+                    }
+                    textInput.dispatchEvent(new Event('input'));
+                    textInput.dispatchEvent(new Event('change'));
+                    if (previewFn) previewFn();
+                    showToast('Cleared media slot.');
+                });
+            }
+        }
+
+        function bindMediaDragAndDrop(previewArea, textInput, selectType, previewFn) {
+            if (!previewArea || !textInput) return;
+            previewArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                previewArea.style.borderColor = 'var(--accent)';
+                previewArea.style.backgroundColor = 'rgba(16, 185, 129, 0.08)';
+            });
+            ['dragleave', 'dragend'].forEach(ev => {
+                previewArea.addEventListener(ev, () => {
+                    previewArea.style.borderColor = '';
+                    previewArea.style.backgroundColor = '';
+                });
+            });
+            previewArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                previewArea.style.borderColor = '';
+                previewArea.style.backgroundColor = '';
+                const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                if (!file) return;
+
+                let detectedType = 'image';
+                if (file.type.startsWith('audio/')) detectedType = 'audio';
+                else if (file.type.startsWith('video/')) detectedType = 'video';
+                else if (file.type.startsWith('image/')) detectedType = 'image';
+
+                if (selectType) {
+                    selectType.value = detectedType;
+                    selectType.dispatchEvent(new Event('change'));
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    textInput.value = event.target.result;
+                    textInput.dispatchEvent(new Event('input'));
+                    textInput.dispatchEvent(new Event('change'));
+                    if (previewFn) previewFn();
+                    showToast(`📁 Dropped local ${file.name} (${(file.size / 1024).toFixed(1)} KB) into question!`);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Bind Stage Question & Answer local media pickers
+        bindMediaPicker(elements.btnUploadQMedia, elements.fileQMediaUpload, elements.qMediaSrc, elements.qMediaType, () => { saveCurrentQuestionFromForm(); renderMediaPreview('q'); }, elements.btnClearQMedia);
+        bindMediaDragAndDrop(elements.qMediaPreview, elements.qMediaSrc, elements.qMediaType, () => { saveCurrentQuestionFromForm(); renderMediaPreview('q'); });
+
+        bindMediaPicker(elements.btnUploadAMedia, elements.fileAMediaUpload, elements.aMediaSrc, elements.aMediaType, () => { saveCurrentQuestionFromForm(); renderMediaPreview('a'); }, elements.btnClearAMedia);
+        bindMediaDragAndDrop(elements.aMediaPreview, elements.aMediaSrc, elements.aMediaType, () => { saveCurrentQuestionFromForm(); renderMediaPreview('a'); });
+
         // Prelims Controls & Media Dropdowns
         if (elements.btnAddPrelim) elements.btnAddPrelim.addEventListener('click', () => addPrelimQuestion(false));
         if (elements.btnAddPrelimTB) elements.btnAddPrelimTB.addEventListener('click', () => addPrelimQuestion(true));
@@ -417,6 +524,13 @@
         });
         if (elements.pQMediaSrc) elements.pQMediaSrc.addEventListener('change', () => renderPrelimMediaPreview('q'));
         if (elements.pAMediaSrc) elements.pAMediaSrc.addEventListener('change', () => renderPrelimMediaPreview('a'));
+
+        // Bind Prelims Question & Answer local media pickers
+        bindMediaPicker(elements.btnUploadPQMedia, elements.filePQMediaUpload, elements.pQMediaSrc, elements.pQMediaType, () => { saveCurrentPrelimFromForm(); renderPrelimMediaPreview('q'); }, elements.btnClearPQMedia);
+        bindMediaDragAndDrop(elements.pQMediaPreview, elements.pQMediaSrc, elements.pQMediaType, () => { saveCurrentPrelimFromForm(); renderPrelimMediaPreview('q'); });
+
+        bindMediaPicker(elements.btnUploadPAMedia, elements.filePAMediaUpload, elements.pAMediaSrc, elements.pAMediaType, () => { saveCurrentPrelimFromForm(); renderPrelimMediaPreview('a'); }, elements.btnClearPAMedia);
+        bindMediaDragAndDrop(elements.pAMediaPreview, elements.pAMediaSrc, elements.pAMediaType, () => { saveCurrentPrelimFromForm(); renderPrelimMediaPreview('a'); });
 
         // Theme live switcher & broadcast
         if (elements.metaTheme) {
